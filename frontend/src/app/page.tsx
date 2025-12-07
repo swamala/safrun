@@ -28,6 +28,7 @@ import {
   Facebook,
   Youtube,
 } from 'lucide-react';
+import { Logo, LogoWordmark } from '@/components/ui/Logo';
 
 // Dynamic import for map to avoid SSR issues
 const RunnerMap = dynamic(() => import('@/components/map/RunnerMap'), {
@@ -351,61 +352,64 @@ export default function LandingPage() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-slate-950' : 'bg-slate-50'}`}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/30 dark:border-slate-800/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-18 py-3">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/25">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">
-                SAF<span className="text-orange-500">RUN</span>
-              </span>
-            </Link>
+            <Logo size="md" />
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Features
-              </a>
-              <a href="#map" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Live Map
-              </a>
-              <a href="#testimonials" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Community
-              </a>
-              <a href="#download" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Download
-              </a>
+            <div className="hidden md:flex items-center">
+              <div className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-full px-2 py-1.5">
+                {[
+                  { href: '#features', label: 'Features' },
+                  { href: '#map', label: 'Live Map' },
+                  { href: '#testimonials', label: 'Community' },
+                  { href: '#download', label: 'Download' },
+                ].map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 rounded-full transition-all duration-200"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Theme toggle */}
               <button
                 onClick={() => setIsDark(!isDark)}
-                className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
                 aria-label="Toggle theme"
               >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              
-              <Link href="/auth/signin" className="hidden sm:block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+
+              {/* Sign In */}
+              <Link
+                href="/auth/signin"
+                className="hidden sm:flex items-center px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
                 Sign In
               </Link>
-              
+
+              {/* Get Started CTA */}
               <Link
                 href="/auth/signup"
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-200"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
-                Get Started
+                <span>Get Started</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800"
+                className="md:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -419,17 +423,36 @@ export default function LandingPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800"
+            className="md:hidden bg-white dark:bg-slate-950 border-t border-slate-200/50 dark:border-slate-800/50"
           >
-            <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block py-2 text-slate-700 dark:text-slate-300">Features</a>
-              <a href="#map" className="block py-2 text-slate-700 dark:text-slate-300">Live Map</a>
-              <a href="#testimonials" className="block py-2 text-slate-700 dark:text-slate-300">Community</a>
-              <a href="#download" className="block py-2 text-slate-700 dark:text-slate-300">Download</a>
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
-                <Link href="/auth/signin" className="block py-2 text-slate-700 dark:text-slate-300">Sign In</Link>
-                <Link href="/auth/signup" className="block py-3 text-center bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-medium">
-                  Get Started
+            <div className="px-4 py-6 space-y-1">
+              {[
+                { href: '#features', label: 'Features' },
+                { href: '#map', label: 'Live Map' },
+                { href: '#testimonials', label: 'Community' },
+                { href: '#download', label: 'Download' },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 px-4 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-medium transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <Link
+                  href="/auth/signin"
+                  className="block py-3 px-4 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-medium transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="block py-3.5 text-center bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/25"
+                >
+                  Get Started Free
                 </Link>
               </div>
             </div>
@@ -936,30 +959,28 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Brand */}
             <div>
-              <Link href="/" className="flex items-center gap-2 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-slate-900 dark:text-white">
-                  SAF<span className="text-orange-500">RUN</span>
-                </span>
-              </Link>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">
-                The social running platform that puts your safety first.
+              <div className="mb-6">
+                <Logo size="md" />
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                The social running platform that puts your safety first. Run with confidence.
               </p>
-              <div className="flex items-center gap-4">
-                <a href="#" className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
-                  <Instagram className="w-5 h-5" />
-                </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
-                  <Youtube className="w-5 h-5" />
-                </a>
+              <div className="flex items-center gap-3">
+                {[
+                  { icon: Twitter, href: '#', label: 'Twitter' },
+                  { icon: Instagram, href: '#', label: 'Instagram' },
+                  { icon: Facebook, href: '#', label: 'Facebook' },
+                  { icon: Youtube, href: '#', label: 'Youtube' },
+                ].map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    aria-label={social.label}
+                    className="p-2.5 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 hover:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-500/10 transition-all duration-200"
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </a>
+                ))}
               </div>
             </div>
 
