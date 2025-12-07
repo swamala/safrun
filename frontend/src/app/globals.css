@@ -8,9 +8,9 @@
     --foreground: 15 23 42;
     --card: 255 255 255;
     --card-foreground: 15 23 42;
-    --primary: 249 115 22;
+    --primary-color: 249 115 22;
     --primary-foreground: 255 255 255;
-    --secondary: 241 245 249;
+    --secondary-color: 241 245 249;
     --secondary-foreground: 15 23 42;
     --muted: 241 245 249;
     --muted-foreground: 100 116 139;
@@ -28,9 +28,9 @@
     --foreground: 248 250 252;
     --card: 30 41 59;
     --card-foreground: 248 250 252;
-    --primary: 251 146 60;
+    --primary-color: 251 146 60;
     --primary-foreground: 15 23 42;
-    --secondary: 51 65 85;
+    --secondary-color: 51 65 85;
     --secondary-foreground: 248 250 252;
     --muted: 51 65 85;
     --muted-foreground: 148 163 184;
@@ -42,20 +42,18 @@
     --input: 51 65 85;
     --ring: 251 146 60;
   }
-}
 
-@layer base {
   * {
-    @apply border-border;
+    border-color: rgb(var(--border));
   }
 
   body {
-    @apply bg-secondary-50 text-secondary-900 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold tracking-tight;
+    @apply font-bold tracking-tight;
   }
 }
 
@@ -65,19 +63,19 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5;
+    @apply bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-500 shadow-lg hover:shadow-xl hover:-translate-y-0.5;
   }
 
   .btn-secondary {
-    @apply btn bg-secondary-100 text-secondary-900 hover:bg-secondary-200 focus:ring-secondary-500;
+    @apply bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-slate-500;
   }
 
   .btn-danger {
-    @apply btn bg-danger-500 text-white hover:bg-danger-600 focus:ring-danger-500 shadow-lg shadow-danger-500/25;
+    @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-lg;
   }
 
   .btn-ghost {
-    @apply btn bg-transparent hover:bg-secondary-100 text-secondary-700;
+    @apply bg-transparent hover:bg-slate-100 text-slate-700;
   }
 
   .btn-lg {
@@ -93,23 +91,23 @@
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-secondary-200/50 overflow-hidden;
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden;
   }
 
   .card-elevated {
-    @apply card shadow-xl shadow-secondary-900/5;
+    @apply bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden;
   }
 
   .input {
-    @apply w-full rounded-xl border border-secondary-300 bg-white px-4 py-3 text-secondary-900 placeholder:text-secondary-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200;
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all duration-200;
   }
 
   .input-error {
-    @apply border-danger-500 focus:border-danger-500 focus:ring-danger-500/20;
+    @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
   }
 
   .label {
-    @apply block text-sm font-medium text-secondary-700 mb-2;
+    @apply block text-sm font-medium text-slate-700 mb-2;
   }
 
   .badge {
@@ -117,25 +115,25 @@
   }
 
   .badge-primary {
-    @apply badge bg-primary-100 text-primary-700;
+    @apply bg-orange-100 text-orange-700;
   }
 
   .badge-success {
-    @apply badge bg-safety-100 text-safety-700;
+    @apply bg-green-100 text-green-700;
   }
 
   .badge-warning {
-    @apply badge bg-amber-100 text-amber-700;
+    @apply bg-amber-100 text-amber-700;
   }
 
   .badge-danger {
-    @apply badge bg-danger-100 text-danger-700;
+    @apply bg-red-100 text-red-700;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-600;
   }
 
   .animate-in {
@@ -163,7 +161,7 @@
 
   .sos-pulse::before {
     content: '';
-    @apply absolute inset-0 rounded-full bg-danger-500 animate-ping opacity-75;
+    @apply absolute inset-0 rounded-full bg-red-500 animate-ping opacity-75;
   }
 }
 
@@ -183,15 +181,18 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-secondary-100 rounded-full;
+  @apply bg-slate-100 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-secondary-300 rounded-full hover:bg-secondary-400;
+  @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
 }
 
 /* Selection */
 ::selection {
-  @apply bg-primary-500/20;
+  background-color: rgba(249, 115, 22, 0.2);
 }
-
