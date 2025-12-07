@@ -106,27 +106,228 @@ const stats = [
 // Testimonials
 const testimonials = [
   {
-    quote: "SAFRUN gave me confidence to run alone again. Knowing my family can track me in real-time is priceless.",
+    quote: "SAFRUN gave me confidence to run alone again. Knowing my family can track me in real-time is priceless. I feel safe on every run now.",
     author: 'Maria Santos',
     role: 'Marathon Runner',
+    location: 'San Francisco, CA',
     avatar: 'MS',
     rating: 5,
+    featured: true,
   },
   {
-    quote: "The SOS feature saved my running partner when she twisted her ankle on a trail. Help arrived in minutes.",
+    quote: "The SOS feature saved my running partner when she twisted her ankle on a trail. Help arrived in minutes. This app is a lifesaver!",
     author: 'James Wilson',
     role: 'Trail Running Club Leader',
+    location: 'Denver, CO',
     avatar: 'JW',
     rating: 5,
+    featured: false,
   },
   {
-    quote: "I've connected with amazing runners in my neighborhood. What started as safety became a real community.",
+    quote: "I've connected with amazing runners in my neighborhood. What started as safety became a real community of friends.",
     author: 'Aisha Okonkwo',
     role: 'Community Organizer',
+    location: 'Austin, TX',
     avatar: 'AO',
     rating: 5,
+    featured: false,
+  },
+  {
+    quote: "As a parent, knowing my teenager is tracked during their runs gives me peace of mind. The guardian feature is brilliant.",
+    author: 'Michael Chen',
+    role: 'Parent & Runner',
+    location: 'Seattle, WA',
+    avatar: 'MC',
+    rating: 5,
+    featured: false,
+  },
+  {
+    quote: "The nearby runners feature helped me find training partners. Now I run with a group every morning. Game changer!",
+    author: 'Emma Thompson',
+    role: 'Ultra Runner',
+    location: 'Portland, OR',
+    avatar: 'ET',
+    rating: 5,
+    featured: false,
   },
 ];
+
+// Testimonial Carousel Component
+function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonials }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const nextTestimonial = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(nextTestimonial, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+    }),
+  };
+
+  return (
+    <div className="relative">
+      {/* Desktop Grid View */}
+      <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+        {testimonials.slice(0, 3).map((testimonial, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+            className="relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 hover:border-orange-500/50 dark:hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300"
+          >
+            <Quote className="w-10 h-10 text-orange-500/20 absolute top-6 right-6" />
+            
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(testimonial.rating)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+              ))}
+            </div>
+            
+            <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
+              "{testimonial.quote}"
+            </p>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-orange-500/25">
+                {testimonial.avatar}
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white">
+                  {testimonial.author}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {testimonial.role}
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {testimonial.location}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mobile/Tablet Carousel */}
+      <div className="lg:hidden relative">
+        <div className="overflow-hidden">
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800"
+          >
+            <Quote className="w-10 h-10 text-orange-500/20 absolute top-6 right-6" />
+            
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+              ))}
+            </div>
+            
+            <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed text-lg">
+              "{testimonials[currentIndex].quote}"
+            </p>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg shadow-orange-500/25">
+                {testimonials[currentIndex].avatar}
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white text-lg">
+                  {testimonials[currentIndex].author}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {testimonials[currentIndex].role}
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {testimonials[currentIndex].location}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Carousel Controls */}
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <button
+            onClick={prevTestimonial}
+            className="p-3 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-orange-500 dark:hover:border-orange-500 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400 rotate-180" />
+          </button>
+          
+          {/* Dots */}
+          <div className="flex items-center gap-2">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
+                }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'w-8 bg-orange-500'
+                    : 'bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
+                }`}
+              />
+            ))}
+          </div>
+          
+          <button
+            onClick={nextTestimonial}
+            className="p-3 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-orange-500 dark:hover:border-orange-500 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop: View More Link */}
+      <div className="hidden lg:flex justify-center mt-12">
+        <button className="group flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
+          <span className="font-medium">Read more stories</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const [isDark, setIsDark] = useState(false);
@@ -644,7 +845,7 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-24 bg-slate-50 dark:bg-slate-950">
+      <section id="testimonials" className="py-24 bg-slate-50 dark:bg-slate-950 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={fadeInUp}
@@ -668,47 +869,8 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                className="relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800"
-              >
-                <Quote className="w-10 h-10 text-orange-500/20 absolute top-6 right-6" />
-                
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                
-                <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
-                  "{testimonial.quote}"
-                </p>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-semibold">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-white">
-                      {testimonial.author}
-                    </p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Testimonial Carousel */}
+          <TestimonialCarousel testimonials={testimonials} />
         </div>
       </section>
 
