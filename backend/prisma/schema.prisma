@@ -1,0 +1,432 @@
+// ===========================================
+// SAFRUN Prisma Schema
+// Social Running & Safety Platform
+// ===========================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================
+// ENUMS
+// ===========================================
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum DeviceType {
+  IOS
+  ANDROID
+  WEB
+}
+
+enum RunSessionStatus {
+  SCHEDULED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum RunSessionPrivacy {
+  PUBLIC
+  PRIVATE
+  FRIENDS_ONLY
+}
+
+enum ParticipantRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum ParticipantStatus {
+  INVITED
+  JOINED
+  LEFT
+  REMOVED
+}
+
+enum SOSTriggerType {
+  MANUAL
+  FALL_DETECTION
+  NO_MOVEMENT
+  ABDUCTION_SPEED
+  DEVICE_SNATCH
+  HEART_RATE_ANOMALY
+}
+
+enum SOSStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  FALSE_ALARM
+  ESCALATED
+}
+
+enum SOSEscalationLevel {
+  LEVEL_1
+  LEVEL_2
+  LEVEL_3
+}
+
+enum ResponderStatus {
+  NOTIFIED
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  DECLINED
+  TIMEOUT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  SOS_TRIGGER
+  SOS_ACKNOWLEDGE
+  LOCATION_UPDATE
+  SESSION_JOIN
+  SESSION_LEAVE
+}
+
+// ===========================================
+// MODELS
+// ===========================================
+
+model User {
+  id                String         @id @default(uuid())
+  email             String?        @unique
+  phone             String?        @unique
+  passwordHash      String?
+  isEmailVerified   Boolean        @default(false)
+  isPhoneVerified   Boolean        @default(false)
+  status            UserStatus     @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  lastLoginAt       DateTime?
+  
+  // Relations
+  profile           Profile?
+  devices           Device[]
+  runSessions       RunSession[]   @relation("SessionCreator")
+  participations    RunParticipant[]
+  locations         LiveLocation[]
+  sosAlerts         SOSAlert[]
+  emergencyContacts EmergencyContact[] @relation("UserContacts")
+  guardianOf        EmergencyContact[] @relation("GuardianOf")
+  sosResponses      SOSResponder[]
+  auditLogs         AuditLog[]
+  refreshTokens     RefreshToken[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+}
+
+model Profile {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  displayName           String
+  avatarUrl             String?
+  bio                   String?
+  
+  // Running Stats
+  totalDistance         Float    @default(0)
+  totalRuns             Int      @default(0)
+  totalDuration         Int      @default(0) // in seconds
+  averagePace           Float?
+  
+  // Safety Settings
+  autoSOSEnabled        Boolean  @default(false)
+  fallDetectionEnabled  Boolean  @default(false)
+  noMovementTimeout     Int      @default(300) // seconds
+  sosVerificationTime   Int      @default(10)  // seconds
+  shareLocationDefault  Boolean  @default(true)
+  anonymousModeEnabled  Boolean  @default(false)
+  homeLocationFuzzing   Boolean  @default(true)
+  
+  // Privacy Settings
+  profileVisibility     String   @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
+  showOnNearbyRadar     Boolean  @default(true)
+  allowGroupInvites     Boolean  @default(true)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([displayName])
+}
+
+model Device {
+  id              String     @id @default(uuid())
+  userId          String
+  deviceType      DeviceType
+  deviceId        String     // Unique device identifier
+  deviceName      String?
+  pushToken       String?
+  fingerprint     String?    // For anomaly detection
+  ipAddress       String?
+  userAgent       String?
+  isActive        Boolean    @default(true)
+  lastActiveAt    DateTime   @default(now())
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  
+  // Relations
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+  @@index([deviceId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  userId      String
+  token       String   @unique
+  deviceId    String?
+  expiresAt   DateTime
+  isRevoked   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model RunSession {
+  id                String            @id @default(uuid())
+  creatorId         String
+  name              String
+  description       String?
+  scheduledStartAt  DateTime?
+  actualStartAt     DateTime?
+  endedAt           DateTime?
+  status            RunSessionStatus  @default(SCHEDULED)
+  privacy           RunSessionPrivacy @default(PUBLIC)
+  
+  // Route Info
+  startLatitude     Float?
+  startLongitude    Float?
+  plannedDistance   Float?            // in meters
+  actualDistance    Float?
+  
+  // Settings
+  maxParticipants   Int               @default(50)
+  allowLateJoin     Boolean           @default(true)
+  shareRoutePublic  Boolean           @default(false)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Relations
+  creator           User              @relation("SessionCreator", fields: [creatorId], references: [id])
+  participants      RunParticipant[]
+  locations         LiveLocation[]
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([scheduledStartAt])
+}
+
+model RunParticipant {
+  id              String            @id @default(uuid())
+  sessionId       String
+  userId          String
+  role            ParticipantRole   @default(MEMBER)
+  status          ParticipantStatus @default(JOINED)
+  
+  // Run Stats
+  joinedAt        DateTime          @default(now())
+  leftAt          DateTime?
+  distance        Float             @default(0)
+  duration        Int               @default(0) // seconds
+  averagePace     Float?
+  maxSpeed        Float?
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  // Relations
+  session         RunSession        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@index([sessionId])
+  @@index([userId])
+}
+
+model LiveLocation {
+  id              String      @id @default(uuid())
+  userId          String
+  sessionId       String?
+  
+  // Location Data
+  latitude        Float
+  longitude       Float
+  altitude        Float?
+  accuracy        Float?
+  speed           Float?      // m/s
+  heading         Float?      // degrees
+  
+  // Validation
+  timestamp       DateTime    @default(now())
+  isEncrypted     Boolean     @default(false)
+  signatureHash   String?     // HMAC signature for verification
+  
+  // Metadata
+  batteryLevel    Float?
+  isCharging      Boolean?
+  networkType     String?     // wifi, cellular, etc.
+  
+  createdAt       DateTime    @default(now())
+  
+  // Relations
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session         RunSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, timestamp])
+  @@index([sessionId])
+  @@index([latitude, longitude])
+  @@index([timestamp])
+}
+
+model SOSAlert {
+  id                  String            @id @default(uuid())
+  userId              String
+  triggerType         SOSTriggerType
+  status              SOSStatus         @default(PENDING_VERIFICATION)
+  escalationLevel     SOSEscalationLevel @default(LEVEL_1)
+  
+  // Location at trigger
+  latitude            Float
+  longitude           Float
+  latitudeEncrypted   String?           // AES encrypted for storage
+  longitudeEncrypted  String?
+  
+  // Approximate location for responders (fuzzed)
+  approxLatitude      Float?
+  approxLongitude     Float?
+  
+  // Timestamps
+  triggeredAt         DateTime          @default(now())
+  verificationSentAt  DateTime?
+  acknowledgedAt      DateTime?
+  resolvedAt          DateTime?
+  
+  // Audio/Video
+  audioRecordingUrl   String?
+  
+  // Metadata
+  notes               String?
+  batteryLevel        Float?
+  lastKnownAddress    String?
+  
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  // Relations
+  user                User              @relation(fields: [userId], references: [id])
+  responders          SOSResponder[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([triggeredAt])
+  @@index([latitude, longitude])
+}
+
+model SOSResponder {
+  id              String          @id @default(uuid())
+  sosAlertId      String
+  responderId     String
+  status          ResponderStatus @default(NOTIFIED)
+  
+  // Response tracking
+  notifiedAt      DateTime        @default(now())
+  acceptedAt      DateTime?
+  arrivedAt       DateTime?
+  declinedAt      DateTime?
+  
+  // Distance when notified
+  distanceMeters  Float?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  sosAlert        SOSAlert        @relation(fields: [sosAlertId], references: [id], onDelete: Cascade)
+  responder       User            @relation(fields: [responderId], references: [id])
+
+  @@unique([sosAlertId, responderId])
+  @@index([sosAlertId])
+  @@index([responderId])
+}
+
+model EmergencyContact {
+  id              String   @id @default(uuid())
+  userId          String
+  guardianId      String?  // If guardian is also a user
+  
+  // Contact Info
+  name            String
+  phone           String
+  email           String?
+  relationship    String   // spouse, parent, friend, etc.
+  
+  // Permissions
+  canViewLocation Boolean  @default(true)
+  canReceiveSOS   Boolean  @default(true)
+  isPrimary       Boolean  @default(false)
+  
+  // Verification
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  user            User     @relation("UserContacts", fields: [userId], references: [id], onDelete: Cascade)
+  guardian        User?    @relation("GuardianOf", fields: [guardianId], references: [id])
+
+  @@index([userId])
+  @@index([phone])
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  userId      String?
+  action      AuditAction
+  resource    String      // e.g., "user", "session", "sos"
+  resourceId  String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+  
+  // Relations
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+}
+
