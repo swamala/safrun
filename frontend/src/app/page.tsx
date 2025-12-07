@@ -271,7 +271,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight"
+              className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight"
             >
               Run Safe,
               <br />
@@ -456,7 +456,7 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-2 rounded-full bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-sm font-medium mb-4">
               Safety First
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
               Your Safety, Our Priority
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
@@ -481,7 +481,7 @@ export default function LandingPage() {
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
                   <feature.icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
+                <h3 className="font-display text-xl font-semibold text-slate-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -506,7 +506,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm font-medium mb-4">
                 Real-Time Tracking
               </span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
                 See Your Running
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
@@ -574,7 +574,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium mb-4">
                 Emergency Response
               </span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
+              <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">
                 One Tap
                 <br />
                 To Safety
@@ -656,7 +656,7 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-sm font-medium mb-4">
               Community Stories
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
               Loved by Runners
               <br />
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
@@ -729,7 +729,7 @@ export default function LandingPage() {
             <div className="relative z-10 px-8 py-16 sm:px-16 sm:py-20 text-center">
               <Heart className="w-16 h-16 text-orange-500 mx-auto mb-6" />
               
-              <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
+              <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">
                 Ready to Run Safer?
               </h2>
               
@@ -803,7 +803,7 @@ export default function LandingPage() {
 
             {/* Product */}
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Product</h4>
+              <h4 className="font-display font-semibold text-slate-900 dark:text-white mb-4">Product</h4>
               <ul className="space-y-3">
                 {['Features', 'Safety', 'Pricing', 'Download', 'Changelog'].map((link) => (
                   <li key={link}>
@@ -817,7 +817,7 @@ export default function LandingPage() {
 
             {/* Company */}
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Company</h4>
+              <h4 className="font-display font-semibold text-slate-900 dark:text-white mb-4">Company</h4>
               <ul className="space-y-3">
                 {['About Us', 'Careers', 'Blog', 'Press', 'Partners'].map((link) => (
                   <li key={link}>
@@ -831,7 +831,7 @@ export default function LandingPage() {
 
             {/* Legal */}
             <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Legal</h4>
+              <h4 className="font-display font-semibold text-slate-900 dark:text-white mb-4">Legal</h4>
               <ul className="space-y-3">
                 {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'GDPR', 'Contact'].map((link) => (
                   <li key={link}>

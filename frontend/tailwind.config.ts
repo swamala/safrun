@@ -6,6 +6,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -65,9 +66,57 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'monospace'],
-        display: ['var(--font-cabinet)', 'system-ui', 'sans-serif'],
+        // Primary sans-serif font for body text
+        sans: [
+          'var(--font-plus-jakarta)',
+          'Plus Jakarta Sans',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
+        // Display font for headings and hero text
+        display: [
+          'var(--font-outfit)',
+          'Outfit',
+          'system-ui',
+          '-apple-system',
+          'sans-serif',
+        ],
+        // Monospace for code and numbers
+        mono: [
+          'JetBrains Mono',
+          'Fira Code',
+          'SF Mono',
+          'Monaco',
+          'monospace',
+        ],
+      },
+      fontSize: {
+        // Responsive font sizes with optimal line heights
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.02em' }],
+        '5xl': ['3rem', { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+        '6xl': ['3.75rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        '7xl': ['4.5rem', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        '8xl': ['6rem', { lineHeight: '1', letterSpacing: '-0.02em' }],
+        '9xl': ['8rem', { lineHeight: '1', letterSpacing: '-0.02em' }],
+      },
+      letterSpacing: {
+        tighter: '-0.05em',
+        tight: '-0.025em',
+        normal: '0em',
+        wide: '0.025em',
+        wider: '0.05em',
+        widest: '0.1em',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -109,4 +158,3 @@ const config: Config = {
 };
 
 export default config;
-

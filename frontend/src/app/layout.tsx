@@ -1,7 +1,24 @@
 import type { Metadata, Viewport } from 'next';
+import { Outfit, Plus_Jakarta_Sans } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { Providers } from './providers';
 import './globals.css';
+
+// Primary font for headings - Modern, geometric, tech-forward
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-outfit',
+  weight: ['400', '500', '600', '700', '800', '900'],
+});
+
+// Secondary font for body text - Clean, professional, highly readable
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-plus-jakarta',
+  weight: ['400', '500', '600', '700'],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -59,8 +76,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-secondary-50">
+    <html 
+      lang="en" 
+      suppressHydrationWarning 
+      className={`${outfit.variable} ${plusJakarta.variable}`}
+    >
+      <body className="min-h-screen bg-slate-50 font-sans antialiased">
         <Providers>
           {children}
           <Toaster
@@ -72,6 +93,7 @@ export default function RootLayout({
                 background: '#1e293b',
                 color: '#f8fafc',
                 padding: '16px',
+                fontFamily: 'var(--font-plus-jakarta), system-ui, sans-serif',
               },
               success: {
                 iconTheme: {
@@ -92,4 +114,3 @@ export default function RootLayout({
     </html>
   );
 }
-
