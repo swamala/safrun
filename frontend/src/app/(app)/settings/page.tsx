@@ -18,6 +18,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
+import { Input, Textarea } from '@/components/ui/Input';
 import { Avatar } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -47,6 +48,50 @@ interface EmergencyContact {
   relationship: string;
   isPrimary: boolean;
   isVerified: boolean;
+}
+
+// Toggle Switch Component
+function Toggle({ 
+  checked, 
+  onChange,
+  label,
+  description,
+}: { 
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  description: string;
+}) {
+  return (
+    <div 
+      className="flex items-center justify-between p-4 rounded-xl"
+      style={{
+        background: 'rgba(var(--muted), 0.3)',
+      }}
+    >
+      <div>
+        <p className="font-medium text-slate-900 dark:text-white">{label}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={cn(
+          'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+          checked ? 'bg-orange-500' : 'bg-slate-200 dark:bg-slate-700'
+        )}
+      >
+        <span
+          className={cn(
+            'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+            checked ? 'translate-x-6' : 'translate-x-1'
+          )}
+        />
+      </button>
+    </div>
+  );
 }
 
 export default function SettingsPage() {
@@ -133,27 +178,35 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full" />
+        <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-secondary-900 mb-6">Settings</h1>
+    <div className="max-w-4xl mx-auto space-y-6">
+      <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+        Settings
+      </h1>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors whitespace-nowrap',
+              'flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 whitespace-nowrap',
               activeTab === tab.id
-                ? 'bg-primary-500 text-white'
-                : 'bg-secondary-100 text-secondary-600 hover:bg-secondary-200'
+                ? 'text-white'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
             )}
+            style={activeTab === tab.id ? {
+              background: 'linear-gradient(135deg, #FF8A2B 0%, #FF6A00 100%)',
+              boxShadow: '0 4px 12px rgba(255, 140, 0, 0.25)',
+            } : {
+              background: 'rgba(var(--muted), 0.3)',
+            }}
           >
             <tab.icon className="w-5 h-5" />
             {tab.label}
@@ -166,48 +219,45 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle>Profile Information</CardTitle>
               <CardDescription>Update your public profile details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6">
               <div className="flex items-center gap-6">
                 <Avatar
                   src={profile?.avatarUrl}
                   name={displayName}
                   size="xl"
                 />
-                <div>
-                  <Button variant="outline" size="sm">
-                    Change Avatar
-                  </Button>
-                </div>
+                <Button variant="outline" size="sm">
+                  Change Avatar
+                </Button>
               </div>
 
-              <div>
-                <label className="label">Display Name</label>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="input"
-                />
-              </div>
+              <Input
+                label="Display Name"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
 
-              <div>
-                <label className="label">Bio</label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="input min-h-[100px]"
-                  placeholder="Tell others about yourself..."
-                />
-              </div>
+              <Textarea
+                label="Bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Tell others about yourself..."
+                rows={4}
+              />
 
-              <Button onClick={handleSaveProfile} isLoading={isSaving}>
-                <Save className="w-5 h-5 mr-2" />
+              <Button 
+                onClick={handleSaveProfile} 
+                isLoading={isSaving}
+                leftIcon={<Save className="w-5 h-5" />}
+              >
                 Save Changes
               </Button>
             </CardContent>
@@ -220,69 +270,42 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle>Safety Settings</CardTitle>
               <CardDescription>Configure your safety features</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
+            <CardContent className="p-6 space-y-4">
+              <Toggle
+                checked={safetySettings.autoSOSEnabled}
+                onChange={(checked) => setSafetySettings({ ...safetySettings, autoSOSEnabled: checked })}
+                label="Auto SOS"
+                description="Automatically trigger SOS based on motion detection"
+              />
+
+              <Toggle
+                checked={safetySettings.fallDetectionEnabled}
+                onChange={(checked) => setSafetySettings({ ...safetySettings, fallDetectionEnabled: checked })}
+                label="Fall Detection"
+                description="Detect falls and trigger SOS automatically"
+              />
+
+              <div 
+                className="p-4 rounded-xl space-y-3"
+                style={{ background: 'rgba(var(--muted), 0.3)' }}
+              >
                 <div>
-                  <p className="font-medium text-secondary-900">Auto SOS</p>
-                  <p className="text-sm text-secondary-500">
-                    Automatically trigger SOS based on motion detection
+                  <p className="font-medium text-slate-900 dark:text-white">No Movement Timeout</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Trigger SOS if no movement detected for this duration
                   </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={safetySettings.autoSOSEnabled}
-                    onChange={(e) =>
-                      setSafetySettings({ ...safetySettings, autoSOSEnabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
-                <div>
-                  <p className="font-medium text-secondary-900">Fall Detection</p>
-                  <p className="text-sm text-secondary-500">
-                    Detect falls and trigger SOS automatically
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={safetySettings.fallDetectionEnabled}
-                    onChange={(e) =>
-                      setSafetySettings({ ...safetySettings, fallDetectionEnabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-                </label>
-              </div>
-
-              <div className="p-4 bg-secondary-50 rounded-xl">
-                <p className="font-medium text-secondary-900 mb-2">
-                  No Movement Timeout
-                </p>
-                <p className="text-sm text-secondary-500 mb-4">
-                  Trigger SOS if no movement detected for this duration
-                </p>
                 <select
                   value={safetySettings.noMovementTimeout}
-                  onChange={(e) =>
-                    setSafetySettings({
-                      ...safetySettings,
-                      noMovementTimeout: parseInt(e.target.value),
-                    })
-                  }
-                  className="input"
+                  onChange={(e) => setSafetySettings({ ...safetySettings, noMovementTimeout: parseInt(e.target.value) })}
+                  className="w-full h-12 px-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
                 >
                   <option value={120}>2 minutes</option>
                   <option value={180}>3 minutes</option>
@@ -291,22 +314,20 @@ export default function SettingsPage() {
                 </select>
               </div>
 
-              <div className="p-4 bg-secondary-50 rounded-xl">
-                <p className="font-medium text-secondary-900 mb-2">
-                  SOS Verification Time
-                </p>
-                <p className="text-sm text-secondary-500 mb-4">
-                  Time to respond before SOS is activated
-                </p>
+              <div 
+                className="p-4 rounded-xl space-y-3"
+                style={{ background: 'rgba(var(--muted), 0.3)' }}
+              >
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-white">SOS Verification Time</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Time to respond before SOS is activated
+                  </p>
+                </div>
                 <select
                   value={safetySettings.sosVerificationTime}
-                  onChange={(e) =>
-                    setSafetySettings({
-                      ...safetySettings,
-                      sosVerificationTime: parseInt(e.target.value),
-                    })
-                  }
-                  className="input"
+                  onChange={(e) => setSafetySettings({ ...safetySettings, sosVerificationTime: parseInt(e.target.value) })}
+                  className="w-full h-12 px-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
                 >
                   <option value={5}>5 seconds</option>
                   <option value={10}>10 seconds</option>
@@ -315,8 +336,11 @@ export default function SettingsPage() {
                 </select>
               </div>
 
-              <Button onClick={handleSaveSafety} isLoading={isSaving}>
-                <Save className="w-5 h-5 mr-2" />
+              <Button 
+                onClick={handleSaveSafety} 
+                isLoading={isSaving}
+                leftIcon={<Save className="w-5 h-5" />}
+              >
                 Save Safety Settings
               </Button>
             </CardContent>
@@ -329,72 +353,34 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle>Privacy Settings</CardTitle>
               <CardDescription>Control your visibility and data sharing</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
-                <div>
-                  <p className="font-medium text-secondary-900">Show on Nearby Radar</p>
-                  <p className="text-sm text-secondary-500">
-                    Allow other runners to discover you nearby
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.showOnNearbyRadar}
-                    onChange={(e) =>
-                      setPrivacySettings({ ...privacySettings, showOnNearbyRadar: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-                </label>
-              </div>
+            <CardContent className="p-6 space-y-4">
+              <Toggle
+                checked={privacySettings.showOnNearbyRadar}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, showOnNearbyRadar: checked })}
+                label="Show on Nearby Radar"
+                description="Allow other runners to discover you nearby"
+              />
 
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
-                <div>
-                  <p className="font-medium text-secondary-900">Allow Group Invites</p>
-                  <p className="text-sm text-secondary-500">
-                    Let others invite you to running sessions
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.allowGroupInvites}
-                    onChange={(e) =>
-                      setPrivacySettings({ ...privacySettings, allowGroupInvites: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-                </label>
-              </div>
+              <Toggle
+                checked={privacySettings.allowGroupInvites}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, allowGroupInvites: checked })}
+                label="Allow Group Invites"
+                description="Let others invite you to running sessions"
+              />
 
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
-                <div>
-                  <p className="font-medium text-secondary-900">Anonymous Mode</p>
-                  <p className="text-sm text-secondary-500">
-                    Hide your name and avatar from others
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.anonymousModeEnabled}
-                    onChange={(e) =>
-                      setPrivacySettings({ ...privacySettings, anonymousModeEnabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-secondary-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-secondary-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-                </label>
-              </div>
+              <Toggle
+                checked={privacySettings.anonymousModeEnabled}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, anonymousModeEnabled: checked })}
+                label="Anonymous Mode"
+                description="Hide your name and avatar from others"
+              />
             </CardContent>
           </Card>
         </motion.div>
@@ -405,29 +391,31 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle>Emergency Contacts</CardTitle>
               <CardDescription>
                 People who will be notified when you trigger an SOS
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4 mb-6">
                 {contacts.length > 0 ? (
                   contacts.map((contact) => (
                     <div
                       key={contact.id}
-                      className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl"
+                      className="flex items-center justify-between p-4 rounded-xl"
+                      style={{ background: 'rgba(var(--muted), 0.3)' }}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Phone className="w-6 h-6 text-primary-600" />
+                        <div className="w-12 h-12 bg-orange-100 dark:bg-orange-500/10 rounded-full flex items-center justify-center">
+                          <Phone className="w-6 h-6 text-orange-500" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-medium text-secondary-900">{contact.name}</p>
+                            <p className="font-medium text-slate-900 dark:text-white">{contact.name}</p>
                             {contact.isPrimary && (
                               <span className="badge badge-primary">Primary</span>
                             )}
@@ -435,25 +423,28 @@ export default function SettingsPage() {
                               <span className="badge badge-success">Verified</span>
                             )}
                           </div>
-                          <p className="text-sm text-secondary-500">{contact.phone}</p>
-                          <p className="text-xs text-secondary-400">{contact.relationship}</p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">{contact.phone}</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">{contact.relationship}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="w-5 h-5 text-danger-500" />
+                      <Button variant="ghost" size="icon-sm">
+                        <Trash2 className="w-5 h-5 text-red-500" />
                       </Button>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8">
-                    <Phone className="w-12 h-12 text-secondary-300 mx-auto mb-3" />
-                    <p className="text-secondary-500">No emergency contacts added</p>
+                  <div className="text-center py-12">
+                    <Phone className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                    <p className="text-slate-500 dark:text-slate-400">No emergency contacts added</p>
                   </div>
                 )}
               </div>
 
-              <Button variant="outline" className="w-full">
-                <Plus className="w-5 h-5 mr-2" />
+              <Button 
+                variant="outline" 
+                fullWidth
+                leftIcon={<Plus className="w-5 h-5" />}
+              >
                 Add Emergency Contact
               </Button>
             </CardContent>
@@ -463,4 +454,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

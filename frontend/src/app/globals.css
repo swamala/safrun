@@ -3,47 +3,47 @@
 @tailwind utilities;
 
 /* ============================================
-   🎨 SAFRUN Theme System - 2025 Design
+   🎨 SAFRUN Design System - 2025
+   Premium, Modern, Consistent
    ============================================ */
 
 @layer base {
   /* ----------------------------------------
-     Light Mode Theme (Warm White)
+     CSS Variables - Light Mode
      ---------------------------------------- */
   :root {
-    /* Core colors */
+    /* Core */
     --background: 250 250 250;
     --background-rgb: 250, 250, 250;
     --foreground: 15 23 42;
     --foreground-rgb: 15, 23, 42;
     
-    /* Surface colors */
+    /* Surface */
     --surface: 255 255 255;
     --surface-elevated: 255 255 255;
     --surface-muted: 248 250 252;
     
-    /* Card colors */
+    /* Card */
     --card: 255 255 255;
     --card-foreground: 15 23 42;
     
-    /* Brand colors */
+    /* Brand */
     --primary: 249 115 22;
     --primary-foreground: 255 255 255;
-    --primary-hover: 234 88 12;
     
-    /* Secondary colors */
+    /* Secondary */
     --secondary: 241 245 249;
     --secondary-foreground: 51 65 85;
     
-    /* Muted colors */
+    /* Muted */
     --muted: 241 245 249;
     --muted-foreground: 100 116 139;
     
-    /* Accent colors */
+    /* Accent */
     --accent: 34 197 94;
     --accent-foreground: 255 255 255;
     
-    /* Destructive colors */
+    /* Destructive */
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
     
@@ -53,9 +53,8 @@
     --input: 226 232 240;
     --ring: 249 115 22;
     
-    /* Grid & Overlay opacity */
+    /* Grid opacity */
     --grid-opacity: 0.04;
-    --overlay-opacity: 0.6;
     
     /* Shadows */
     --shadow-color: 0 0 0;
@@ -63,42 +62,41 @@
   }
 
   /* ----------------------------------------
-     Dark Mode Theme (Deep Navy)
+     CSS Variables - Dark Mode
      ---------------------------------------- */
   .dark {
-    /* Core colors - Deep Navy */
+    /* Core - Deep Navy */
     --background: 10 14 25;
     --background-rgb: 10, 14, 25;
     --foreground: 248 250 252;
     --foreground-rgb: 248, 250, 252;
     
-    /* Surface colors */
+    /* Surface */
     --surface: 15 23 42;
     --surface-elevated: 30 41 59;
     --surface-muted: 15 23 42;
     
-    /* Card colors */
+    /* Card */
     --card: 20 27 45;
     --card-foreground: 248 250 252;
     
-    /* Brand colors */
+    /* Brand */
     --primary: 251 146 60;
     --primary-foreground: 10 14 25;
-    --primary-hover: 249 115 22;
     
-    /* Secondary colors */
+    /* Secondary */
     --secondary: 30 41 59;
     --secondary-foreground: 203 213 225;
     
-    /* Muted colors */
+    /* Muted */
     --muted: 30 41 59;
     --muted-foreground: 148 163 184;
     
-    /* Accent colors */
+    /* Accent */
     --accent: 74 222 128;
     --accent-foreground: 10 14 25;
     
-    /* Destructive colors */
+    /* Destructive */
     --destructive: 248 113 113;
     --destructive-foreground: 10 14 25;
     
@@ -108,9 +106,8 @@
     --input: 51 65 85;
     --ring: 251 146 60;
     
-    /* Grid & Overlay opacity */
-    --grid-opacity: 0.08;
-    --overlay-opacity: 0.8;
+    /* Grid opacity */
+    --grid-opacity: 0.06;
     
     /* Shadows */
     --shadow-color: 0 0 0;
@@ -118,7 +115,7 @@
   }
 
   /* ----------------------------------------
-     Global Element Styles
+     Global Base Styles
      ---------------------------------------- */
   * {
     border-color: rgb(var(--border) / 0.5);
@@ -134,41 +131,51 @@
   body {
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
-    font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
-    font-size: 16px;
+    font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-size: 1rem;
     line-height: 1.6;
   }
 
   /* ----------------------------------------
-     Typography
+     Typography System
      ---------------------------------------- */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-outfit), 'Outfit', system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
     color: rgb(var(--foreground));
     text-wrap: balance;
-    line-height: 1.15;
   }
 
   h1 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    letter-spacing: -0.03em;
-    font-weight: 800;
+    @apply text-4xl md:text-5xl font-extrabold tracking-tight;
+    line-height: 1.1;
   }
 
   h2 {
-    font-size: clamp(2rem, 4vw, 3.5rem);
-    letter-spacing: -0.025em;
+    @apply text-3xl md:text-4xl font-bold;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   h3 {
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    @apply text-2xl md:text-3xl font-semibold;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
   }
 
   h4 {
-    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    @apply text-xl font-semibold;
+    line-height: 1.3;
+  }
+
+  h5 {
+    @apply text-lg font-semibold;
+    line-height: 1.4;
+  }
+
+  h6 {
+    @apply text-base font-semibold;
+    line-height: 1.5;
   }
 
   p {
@@ -180,6 +187,19 @@
     font-weight: 600;
     color: rgb(var(--foreground));
   }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Focus States */
+  :focus-visible {
+    @apply outline-none ring-2 ring-orange-500/50 ring-offset-2;
+  }
+
+  .dark :focus-visible {
+    @apply ring-orange-400/50 ring-offset-slate-900;
+  }
 }
 
 /* ============================================
@@ -188,45 +208,63 @@
 
 @layer components {
   /* ----------------------------------------
-     Modern Navbar (2025)
+     Typography Classes
      ---------------------------------------- */
-  .navbar {
-    @apply fixed top-0 left-0 right-0 z-50;
-    @apply h-[72px] md:h-20;
-    @apply backdrop-blur-xl;
-    background: rgb(var(--background) / 0.85);
-    border-bottom: 1px solid rgb(var(--border) / 0.3);
+  .heading-1 {
+    @apply font-display text-4xl md:text-5xl font-extrabold tracking-tight;
+    line-height: 1.1;
+    color: rgb(var(--foreground));
   }
 
-  .dark .navbar {
-    background: rgb(10 14 25 / 0.9);
-    border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  .heading-2 {
+    @apply font-display text-3xl md:text-4xl font-bold;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: rgb(var(--foreground));
   }
 
-  .nav-link {
-    @apply text-sm font-medium transition-all duration-200;
-    @apply px-4 py-2 rounded-lg;
+  .heading-3 {
+    @apply font-display text-2xl md:text-3xl font-semibold;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: rgb(var(--foreground));
+  }
+
+  .heading-4 {
+    @apply font-display text-xl font-semibold;
+    line-height: 1.3;
+    color: rgb(var(--foreground));
+  }
+
+  .text-body {
+    @apply text-base leading-relaxed;
     color: rgb(var(--muted-foreground));
   }
 
-  .nav-link:hover {
-    color: rgb(var(--foreground));
-    background: rgb(var(--muted) / 0.5);
+  .text-body-lg {
+    @apply text-lg leading-relaxed;
+    color: rgb(var(--muted-foreground));
   }
 
-  .dark .nav-link:hover {
-    background: rgb(255 255 255 / 0.05);
+  .text-muted {
+    @apply text-sm;
+    color: rgb(var(--muted-foreground));
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #FF7A18 0%, #FFB347 100%);
   }
 
   /* ----------------------------------------
-     Buttons (Modern 2025)
+     Button System
      ---------------------------------------- */
   .btn {
-    @apply inline-flex items-center justify-center;
+    @apply inline-flex items-center justify-center gap-2;
     @apply font-semibold transition-all duration-300;
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply rounded-2xl;
+    @apply rounded-xl;
     font-family: var(--font-plus-jakarta);
   }
 
@@ -236,106 +274,101 @@
     box-shadow: 0 4px 24px rgba(255, 140, 0, 0.35);
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 32px rgba(255, 140, 0, 0.45);
   }
 
-  .btn-primary:active {
+  .btn-primary:active:not(:disabled) {
     transform: translateY(0);
   }
 
   .btn-secondary {
-    @apply border-2;
+    @apply border;
     background: rgb(var(--surface));
     border-color: rgb(var(--border));
     color: rgb(var(--foreground));
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   }
 
   .dark .btn-secondary {
-    background: rgb(255 255 255 / 0.05);
-    border-color: rgb(255 255 255 / 0.1);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
-  .btn-secondary:hover {
-    transform: translateY(-2px);
+  .btn-secondary:hover:not(:disabled) {
+    transform: translateY(-1px);
     border-color: rgb(var(--primary));
   }
 
-  .btn-lg {
-    @apply px-8 py-4 text-lg gap-3;
+  .btn-danger {
+    @apply bg-red-500 text-white;
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.35);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    @apply bg-red-600;
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    @apply bg-green-500 text-white;
+    box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
+  }
+
+  .btn-success:hover:not(:disabled) {
+    @apply bg-green-600;
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    @apply bg-transparent;
+    color: rgb(var(--muted-foreground));
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: rgb(var(--muted) / 0.5);
+    color: rgb(var(--foreground));
+  }
+
+  .btn-outline {
+    @apply border-2 bg-transparent;
+    border-color: rgb(var(--border));
+    color: rgb(var(--foreground));
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    border-color: rgb(var(--primary));
+    background: rgb(var(--primary) / 0.1);
+  }
+
+  /* Button Sizes */
+  .btn-sm {
+    @apply px-4 py-2 text-sm;
   }
 
   .btn-md {
-    @apply px-6 py-3 text-base gap-2;
+    @apply px-6 py-3 text-base;
   }
 
-  .btn-sm {
-    @apply px-4 py-2 text-sm gap-2;
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
   }
 
-  /* ----------------------------------------
-     Cards (Glassmorphism 2025)
-     ---------------------------------------- */
-  .card {
-    @apply rounded-3xl overflow-hidden;
-    background: rgb(var(--card));
-    border: 1px solid rgb(var(--border) / 0.5);
-  }
-
-  .dark .card {
-    background: rgb(255 255 255 / 0.03);
-    border: 1px solid rgb(255 255 255 / 0.06);
-  }
-
-  .card-glass {
-    @apply rounded-3xl overflow-hidden backdrop-blur-xl;
-    background: rgb(var(--surface) / 0.8);
-    border: 1px solid rgb(var(--border) / 0.3);
-  }
-
-  .dark .card-glass {
-    background: rgb(255 255 255 / 0.05);
-    border: 1px solid rgb(255 255 255 / 0.08);
-  }
-
-  .card-elevated {
-    @apply rounded-3xl overflow-hidden;
-    background: rgb(var(--card));
-    box-shadow: 0 8px 32px rgb(var(--shadow-color) / var(--shadow-opacity));
+  .btn-icon {
+    @apply p-3;
   }
 
   /* ----------------------------------------
-     Badges
-     ---------------------------------------- */
-  .badge {
-    @apply inline-flex items-center rounded-full px-4 py-1.5 text-xs font-semibold;
-  }
-
-  .badge-primary {
-    background: rgb(var(--primary) / 0.1);
-    color: rgb(var(--primary));
-    border: 1px solid rgb(var(--primary) / 0.2);
-  }
-
-  .badge-success {
-    background: rgb(var(--accent) / 0.1);
-    color: rgb(var(--accent));
-    border: 1px solid rgb(var(--accent) / 0.2);
-  }
-
-  /* ----------------------------------------
-     Form Elements
+     Input System
      ---------------------------------------- */
   .input {
-    @apply w-full rounded-2xl px-5 py-4;
+    @apply w-full h-12 px-4 rounded-xl;
     @apply transition-all duration-200;
-    @apply focus:outline-none focus:ring-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-orange-500/30;
     background: rgb(var(--surface));
     border: 1px solid rgb(var(--border) / 0.5);
     color: rgb(var(--foreground));
+    font-family: var(--font-plus-jakarta);
   }
 
   .input::placeholder {
@@ -344,17 +377,204 @@
 
   .input:focus {
     border-color: rgb(var(--primary) / 0.5);
-    ring-color: rgb(var(--primary) / 0.2);
   }
 
   .dark .input {
-    background: rgb(255 255 255 / 0.03);
-    border-color: rgb(255 255 255 / 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .input:focus {
+    border-color: rgba(251, 146, 60, 0.5);
+    @apply ring-orange-400/30;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500/30;
   }
 
   .label {
     @apply block text-sm font-medium mb-2;
     color: rgb(var(--foreground));
+  }
+
+  .dark .label {
+    color: rgb(var(--secondary-foreground));
+  }
+
+  /* ----------------------------------------
+     Card System
+     ---------------------------------------- */
+  .card {
+    @apply rounded-2xl overflow-hidden;
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border) / 0.5);
+  }
+
+  .dark .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .card-glass {
+    @apply rounded-2xl overflow-hidden backdrop-blur-xl;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .card-glass {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .card-elevated {
+    @apply rounded-2xl overflow-hidden;
+    background: rgb(var(--card));
+    box-shadow: 0 4px 24px rgb(var(--shadow-color) / var(--shadow-opacity));
+  }
+
+  /* ----------------------------------------
+     Badge System
+     ---------------------------------------- */
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .badge-primary {
+    background: rgb(var(--primary) / 0.1);
+    color: #f97316;
+    border: 1px solid rgb(var(--primary) / 0.2);
+  }
+
+  .dark .badge-primary {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+    border-color: rgba(251, 146, 60, 0.3);
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-700 border border-green-200;
+  }
+
+  .dark .badge-success {
+    @apply bg-green-500/15 text-green-400 border-green-500/30;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-700 border border-red-200;
+  }
+
+  .dark .badge-danger {
+    @apply bg-red-500/15 text-red-400 border-red-500/30;
+  }
+
+  .badge-secondary {
+    background: rgb(var(--secondary));
+    color: rgb(var(--secondary-foreground));
+  }
+
+  .dark .badge-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgb(var(--muted-foreground));
+  }
+
+  /* ----------------------------------------
+     Navigation
+     ---------------------------------------- */
+  .nav-link {
+    @apply text-sm font-medium px-4 py-2.5 rounded-xl;
+    @apply transition-all duration-200;
+    color: rgb(var(--muted-foreground));
+  }
+
+  .nav-link:hover {
+    color: rgb(var(--foreground));
+    background: rgb(var(--muted) / 0.5);
+  }
+
+  .dark .nav-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .nav-link-active {
+    @apply text-orange-500;
+    background: rgb(var(--primary) / 0.1);
+  }
+
+  .dark .nav-link-active {
+    @apply text-orange-400;
+    background: rgba(251, 146, 60, 0.1);
+  }
+
+  /* ----------------------------------------
+     Sidebar
+     ---------------------------------------- */
+  .sidebar {
+    @apply fixed left-0 top-0 bottom-0 w-64;
+    @apply border-r flex flex-col;
+    background: rgb(var(--surface));
+    border-color: rgb(var(--border) / 0.5);
+  }
+
+  .dark .sidebar {
+    background: rgba(10, 14, 25, 0.95);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl;
+    @apply font-medium transition-all duration-200;
+    color: rgb(var(--muted-foreground));
+  }
+
+  .sidebar-link:hover {
+    background: rgb(var(--muted) / 0.5);
+    color: rgb(var(--foreground));
+  }
+
+  .dark .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .sidebar-link-active {
+    @apply text-orange-500;
+    background: rgb(var(--primary) / 0.1);
+  }
+
+  .dark .sidebar-link-active {
+    @apply text-orange-400;
+    background: rgba(251, 146, 60, 0.1);
+  }
+
+  /* ----------------------------------------
+     Layout Containers
+     ---------------------------------------- */
+  .container-app {
+    @apply max-w-7xl mx-auto px-4 md:px-6 lg:px-8;
+  }
+
+  .section-spacing {
+    @apply py-16 md:py-24;
+  }
+
+  .section-spacing-sm {
+    @apply py-8 md:py-12;
+  }
+
+  /* ----------------------------------------
+     Auth Pages Card
+     ---------------------------------------- */
+  .auth-card {
+    @apply w-full max-w-md p-8 rounded-2xl;
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border) / 0.5);
+    box-shadow: 0 4px 24px rgb(var(--shadow-color) / var(--shadow-opacity));
+  }
+
+  .dark .auth-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -378,32 +598,19 @@
     background-color: rgb(var(--surface-elevated));
   }
 
-  /* ----------------------------------------
-     Text Gradient
-     ---------------------------------------- */
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #FF7A18 0%, #FFB347 100%);
+  .bg-glass {
+    @apply backdrop-blur-xl;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
-  .text-gradient-vibrant {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #FF6A00 0%, #FFB347 50%, #FF8A2B 100%);
-  }
-
-  /* ----------------------------------------
-     Font Utilities
-     ---------------------------------------- */
-  .font-display {
-    font-family: var(--font-outfit), 'Outfit', system-ui, sans-serif;
-  }
-
-  .font-body {
-    font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  .dark .bg-glass {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   /* ----------------------------------------
-     Grid Background (Light/Dark aware)
+     Grid Background
      ---------------------------------------- */
   .bg-grid {
     background-image: 
@@ -412,47 +619,9 @@
     background-size: 64px 64px;
   }
 
-  .bg-grid-sm {
-    background-image: 
-      linear-gradient(to right, rgb(var(--foreground) / var(--grid-opacity)) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(var(--foreground) / var(--grid-opacity)) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
   /* ----------------------------------------
-     Gradient Backgrounds (2025 Modern)
+     Gradient Backgrounds
      ---------------------------------------- */
-  .bg-gradient-light {
-    background: linear-gradient(180deg, 
-      rgb(255 247 237 / 0.5) 0%, 
-      rgb(var(--background)) 50%,
-      rgb(239 246 255 / 0.3) 100%
-    );
-  }
-
-  .dark .bg-gradient-light {
-    background: linear-gradient(180deg, 
-      rgb(10 14 25) 0%, 
-      rgb(10 14 25) 100%
-    );
-  }
-
-  .bg-gradient-radial {
-    background: radial-gradient(
-      ellipse 80% 50% at 50% -20%,
-      rgb(var(--primary) / 0.15),
-      transparent 70%
-    );
-  }
-
-  .dark .bg-gradient-radial {
-    background: radial-gradient(
-      ellipse 80% 50% at 50% -20%,
-      rgb(var(--primary) / 0.08),
-      transparent 70%
-    );
-  }
-
   .bg-gradient-hero {
     background: 
       radial-gradient(ellipse 100% 80% at 50% 0%, rgb(var(--primary) / 0.08), transparent 50%),
@@ -468,46 +637,21 @@
   }
 
   /* ----------------------------------------
-     Glass Effects
+     Font Utilities
      ---------------------------------------- */
-  .glass {
-    @apply backdrop-blur-xl;
-    background: rgb(var(--surface) / 0.7);
-    border: 1px solid rgb(var(--border) / 0.3);
+  .font-display {
+    font-family: var(--font-outfit), 'Outfit', system-ui, sans-serif;
   }
 
-  .dark .glass {
-    background: rgb(255 255 255 / 0.05);
-    border: 1px solid rgb(255 255 255 / 0.08);
-  }
-
-  .glass-card {
-    @apply backdrop-blur-2xl rounded-3xl;
-    background: rgb(var(--surface) / 0.6);
-    border: 1px solid rgb(var(--border) / 0.2);
-    box-shadow: 0 8px 32px rgb(0 0 0 / 0.05);
-  }
-
-  .dark .glass-card {
-    background: rgb(255 255 255 / 0.03);
-    border: 1px solid rgb(255 255 255 / 0.06);
-    box-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+  .font-body {
+    font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
   /* ----------------------------------------
      Animation Utilities
      ---------------------------------------- */
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
   .animate-in {
-    animation: animate-in 0.5s ease-out forwards;
+    animation: animate-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
   @keyframes animate-in {
@@ -515,17 +659,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .animate-pulse-soft {
-    animation: pulse-soft 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-soft {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
   /* ----------------------------------------
-     Modern Shadows (2025)
+     Shadow Utilities
      ---------------------------------------- */
   .shadow-glow-orange {
     box-shadow: 0 4px 24px rgba(255, 140, 0, 0.35);
@@ -533,41 +668,6 @@
 
   .shadow-glow-orange-lg {
     box-shadow: 0 8px 40px rgba(255, 140, 0, 0.4);
-  }
-
-  .shadow-soft {
-    box-shadow: 0 4px 24px rgb(var(--shadow-color) / 0.08);
-  }
-
-  .shadow-soft-lg {
-    box-shadow: 0 8px 40px rgb(var(--shadow-color) / 0.12);
-  }
-
-  .dark .shadow-soft,
-  .dark .shadow-soft-lg {
-    box-shadow: 0 8px 40px rgb(0 0 0 / 0.4);
-  }
-
-  /* ----------------------------------------
-     Section Spacing (8pt system)
-     ---------------------------------------- */
-  .section-spacing {
-    @apply py-24 md:py-32;
-  }
-
-  .section-spacing-sm {
-    @apply py-16 md:py-24;
-  }
-
-  /* ----------------------------------------
-     Container
-     ---------------------------------------- */
-  .container-lg {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .container-xl {
-    @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
 
@@ -613,13 +713,4 @@
 ::selection {
   background: rgb(var(--primary) / 0.2);
   color: rgb(var(--foreground));
-}
-
-/* Focus */
-:focus-visible {
-  outline: none;
-  ring: 2px;
-  ring-color: rgb(var(--primary) / 0.5);
-  ring-offset: 2px;
-  ring-offset-color: rgb(var(--background));
 }

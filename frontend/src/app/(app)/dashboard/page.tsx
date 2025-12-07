@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   MapPin,
   Zap,
+  Plus,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRunStore } from '@/stores/run.store';
@@ -21,7 +22,7 @@ import { api } from '@/lib/api';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
-import { formatDistance, formatDuration, formatPace } from '@/lib/utils';
+import { formatDistance, formatDuration, cn } from '@/lib/utils';
 
 interface Session {
   id: string;
@@ -76,22 +77,25 @@ export default function DashboardPage() {
       label: 'Total Distance',
       value: formatDistance(profile?.stats.totalDistance || 0),
       icon: Footprints,
-      color: 'text-primary-500',
-      bgColor: 'bg-primary-50',
+      gradient: 'from-orange-500 to-amber-500',
+      bgColor: 'bg-orange-100 dark:bg-orange-500/10',
+      iconColor: 'text-orange-500',
     },
     {
       label: 'Total Runs',
       value: profile?.stats.totalRuns || 0,
       icon: TrendingUp,
-      color: 'text-safety-500',
-      bgColor: 'bg-safety-50',
+      gradient: 'from-green-500 to-emerald-500',
+      bgColor: 'bg-green-100 dark:bg-green-500/10',
+      iconColor: 'text-green-500',
     },
     {
       label: 'Time Running',
       value: formatDuration(profile?.stats.totalDuration || 0),
       icon: Clock,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-50',
+      gradient: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-100 dark:bg-blue-500/10',
+      iconColor: 'text-blue-500',
     },
     {
       label: 'Avg Pace',
@@ -99,36 +103,42 @@ export default function DashboardPage() {
         ? `${profile.stats.averagePace.toFixed(1)} min/km`
         : '--',
       icon: Zap,
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-50',
+      gradient: 'from-purple-500 to-pink-500',
+      bgColor: 'bg-purple-100 dark:bg-purple-500/10',
+      iconColor: 'text-purple-500',
     },
   ];
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full" />
+        <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-secondary-900">
+          <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
             Welcome back, {user?.displayName?.split(' ')[0] || 'Runner'}! 👋
           </h1>
-          <p className="text-secondary-600 mt-1">Ready for your next run?</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">
+            Ready for your next run?
+          </p>
         </div>
         <Link href="/run">
-          <Button size="lg" className="w-full sm:w-auto">
-            <Play className="w-5 h-5 mr-2" />
+          <Button 
+            size="lg" 
+            leftIcon={<Play className="w-5 h-5" />}
+          >
             Start Running
           </Button>
         </Link>
@@ -141,20 +151,26 @@ export default function DashboardPage() {
           animate={{ opacity: 1, scale: 1 }}
         >
           <Link href="/run">
-            <Card className="bg-gradient-to-r from-primary-500 to-primary-600 text-white cursor-pointer hover:shadow-lg transition-shadow">
-              <CardContent className="flex items-center justify-between p-6">
+            <div 
+              className="rounded-2xl p-6 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #FF8A2B 0%, #FF6A00 100%)',
+                boxShadow: '0 8px 32px rgba(255, 140, 0, 0.35)',
+              }}
+            >
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <MapPin className="w-6 h-6" />
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <p className="text-white/80 text-sm">Active Session</p>
-                    <p className="text-lg font-semibold">{activeSession.name}</p>
+                    <p className="text-lg font-semibold text-white">{activeSession.name}</p>
                   </div>
                 </div>
-                <ChevronRight className="w-6 h-6" />
-              </CardContent>
-            </Card>
+                <ChevronRight className="w-6 h-6 text-white" />
+              </div>
+            </div>
           </Link>
         </motion.div>
       )}
@@ -166,16 +182,19 @@ export default function DashboardPage() {
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
           >
             <Card padding="md">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
-                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  'w-12 h-12 rounded-xl flex items-center justify-center',
+                  stat.bgColor
+                )}>
+                  <stat.icon className={cn('w-6 h-6', stat.iconColor)} />
                 </div>
                 <div>
-                  <p className="text-xs text-secondary-500">{stat.label}</p>
-                  <p className="text-lg font-bold text-secondary-900">{stat.value}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
                 </div>
               </div>
             </Card>
@@ -188,38 +207,53 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-safety-500" />
+                <Shield className="w-5 h-5 text-green-500" />
                 Safety Status
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
+            <CardContent className="p-6 space-y-4">
+              <div 
+                className="flex items-center justify-between p-4 rounded-xl"
+                style={{
+                  background: 'rgba(var(--muted), 0.5)',
+                }}
+              >
                 <div className="flex items-center gap-3">
-                  <AlertTriangle className="w-5 h-5 text-secondary-500" />
-                  <span className="font-medium">Auto SOS</span>
+                  <AlertTriangle className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                  <span className="font-medium text-slate-700 dark:text-slate-300">Auto SOS</span>
                 </div>
-                <span className={`badge ${profile?.safetySettings.autoSOSEnabled ? 'badge-success' : 'badge-secondary'}`}>
+                <span className={cn(
+                  'badge',
+                  profile?.safetySettings.autoSOSEnabled ? 'badge-success' : 'badge-secondary'
+                )}>
                   {profile?.safetySettings.autoSOSEnabled ? 'Enabled' : 'Disabled'}
                 </span>
               </div>
-              <div className="flex items-center justify-between p-4 bg-secondary-50 rounded-xl">
+              <div 
+                className="flex items-center justify-between p-4 rounded-xl"
+                style={{
+                  background: 'rgba(var(--muted), 0.5)',
+                }}
+              >
                 <div className="flex items-center gap-3">
-                  <Zap className="w-5 h-5 text-secondary-500" />
-                  <span className="font-medium">Fall Detection</span>
+                  <Zap className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                  <span className="font-medium text-slate-700 dark:text-slate-300">Fall Detection</span>
                 </div>
-                <span className={`badge ${profile?.safetySettings.fallDetectionEnabled ? 'badge-success' : 'badge-secondary'}`}>
+                <span className={cn(
+                  'badge',
+                  profile?.safetySettings.fallDetectionEnabled ? 'badge-success' : 'badge-secondary'
+                )}>
                   {profile?.safetySettings.fallDetectionEnabled ? 'Enabled' : 'Disabled'}
                 </span>
               </div>
               <Link href="/settings">
-                <Button variant="ghost" className="w-full justify-between">
+                <Button variant="ghost" fullWidth rightIcon={<ChevronRight className="w-5 h-5" />}>
                   Manage Safety Settings
-                  <ChevronRight className="w-5 h-5" />
                 </Button>
               </Link>
             </CardContent>
@@ -230,45 +264,48 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <Card>
-            <CardHeader>
+          <Card padding="none">
+            <CardHeader className="p-6 pb-0">
               <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary-500" />
+                <Users className="w-5 h-5 text-orange-500" />
                 Recent Sessions
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               {recentSessions.length > 0 ? (
                 <div className="space-y-3">
                   {recentSessions.map((session) => (
                     <Link
                       key={session.id}
                       href={`/sessions/${session.id}`}
-                      className="flex items-center justify-between p-3 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-xl transition-all duration-200 hover:bg-slate-100 dark:hover:bg-white/5 group"
+                      style={{
+                        background: 'rgba(var(--muted), 0.3)',
+                      }}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-primary-600" />
+                        <div className="w-10 h-10 bg-orange-100 dark:bg-orange-500/10 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-orange-500" />
                         </div>
                         <div>
-                          <p className="font-medium text-secondary-900">{session.name}</p>
-                          <p className="text-sm text-secondary-500">
+                          <p className="font-medium text-slate-900 dark:text-white">{session.name}</p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
                             {session.participantCount} runners • {session.status}
                           </p>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-secondary-400" />
+                      <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-orange-500 transition-colors" />
                     </Link>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Users className="w-12 h-12 text-secondary-300 mx-auto mb-3" />
-                  <p className="text-secondary-500">No recent sessions</p>
+                  <Users className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                  <p className="text-slate-500 dark:text-slate-400">No recent sessions</p>
                   <Link href="/sessions">
-                    <Button variant="ghost" size="sm" className="mt-2">
+                    <Button variant="ghost" size="sm" className="mt-3">
                       Browse Sessions
                     </Button>
                   </Link>
@@ -283,30 +320,48 @@ export default function DashboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
       >
-        <Card>
-          <CardHeader>
+        <Card padding="none">
+          <CardHeader className="p-6 pb-0">
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div className="grid sm:grid-cols-3 gap-4">
               <Link href="/sessions/create">
-                <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
-                  <Users className="w-6 h-6" />
-                  <span>Create Session</span>
+                <Button 
+                  variant="outline" 
+                  fullWidth 
+                  className="h-auto py-6 flex-col gap-3"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center">
+                    <Plus className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <span className="text-slate-700 dark:text-slate-300">Create Session</span>
                 </Button>
               </Link>
               <Link href="/sessions">
-                <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
-                  <MapPin className="w-6 h-6" />
-                  <span>Join Session</span>
+                <Button 
+                  variant="outline" 
+                  fullWidth 
+                  className="h-auto py-6 flex-col gap-3"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <span className="text-slate-700 dark:text-slate-300">Join Session</span>
                 </Button>
               </Link>
               <Link href="/settings">
-                <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2">
-                  <Shield className="w-6 h-6" />
-                  <span>Safety Settings</span>
+                <Button 
+                  variant="outline" 
+                  fullWidth 
+                  className="h-auto py-6 flex-col gap-3"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-500/10 flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-green-500" />
+                  </div>
+                  <span className="text-slate-700 dark:text-slate-300">Safety Settings</span>
                 </Button>
               </Link>
             </div>
@@ -316,4 +371,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
