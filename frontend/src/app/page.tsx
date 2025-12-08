@@ -509,7 +509,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-[1.1] tracking-[-0.03em] mb-8"
             >
-              <span className="text-slate-900 dark:text-white">Run Safe,</span>
+              <span className="text-gray-900 dark:text-white" style={{ color: 'rgb(15, 23, 42)' }}>Run Safe,</span>
               <br />
               <span 
                 className="bg-clip-text text-transparent"
