@@ -1,48 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useCallback } from 'react';
+import { sdk } from '@/lib/sdk';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRunStore } from '@/stores/run.store';
 import { useSOSStore } from '@/stores/sos.store';
 import toast from 'react-hot-toast';
-
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/events';
+import type { 
+  WSLocationBroadcast, 
+  WSSOSAlert, 
+  WSSOSUpdate, 
+  WSSOSVerify,
+  WSNearbyUpdate,
+  WSSessionParticipantEvent,
+} from '@safrun/sdk';
 
 export function useSocket() {
-  const socketRef = useRef<Socket | null>(null);
   const { isAuthenticated } = useAuthStore();
   const { updateParticipantLocation, activeSession } = useRunStore();
   const { setActiveAlert, showVerificationModal, setNearbyAlerts } = useSOSStore();
 
-  const connect = useCallback(() => {
-    if (socketRef.current?.connected) return;
-
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    socketRef.current = io(WS_URL, {
-      auth: { token },
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    socketRef.current.on('connect', () => {
-      console.log('WebSocket connected');
-    });
-
-    socketRef.current.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
-    });
-
-    socketRef.current.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
-    });
-
+  // Setup event listeners
+  const setupListeners = useCallback(() => {
     // Location broadcasts from session participants
-    socketRef.current.on('location:broadcast', (data) => {
+    const unsubLocation = sdk.socket.on('location:broadcast', (data: WSLocationBroadcast) => {
       updateParticipantLocation(data.userId, {
         latitude: data.latitude,
         longitude: data.longitude,
@@ -53,73 +34,115 @@ export function useSocket() {
     });
 
     // Session events
-    socketRef.current.on('session:participant-joined', (data) => {
-      toast.success(`${data.displayName || 'A runner'} joined the session`);
+    const unsubJoined = sdk.socket.on('session:participant-joined', (data: WSSessionParticipantEvent) => {
+      toast.success(`A runner joined the session`);
     });
 
-    socketRef.current.on('session:participant-left', (data) => {
-      toast(`${data.displayName || 'A runner'} left the session`);
-    });
-
-    socketRef.current.on('session:update', (data) => {
-      console.log('Session update:', data);
+    const unsubLeft = sdk.socket.on('session:participant-left', (data: WSSessionParticipantEvent) => {
+      toast(`A runner left the session`);
     });
 
     // SOS events
-    socketRef.current.on('sos:verify', (data) => {
+    const unsubSOSVerify = sdk.socket.on('sos:verify', (data: WSSOSVerify) => {
       showVerificationModal(true);
-      setActiveAlert(data);
     });
 
-    socketRef.current.on('sos:alert', (data) => {
+    const unsubSOSAlert = sdk.socket.on('sos:alert', (data: WSSOSAlert) => {
       toast.error(`🆘 SOS Alert: ${data.userName || 'A runner'} needs help nearby!`, {
         duration: 10000,
       });
-      setNearbyAlerts((prev: unknown) => [...(prev as unknown[]), data]);
     });
 
-    socketRef.current.on('sos:update', (data) => {
+    const unsubSOSBroadcast = sdk.socket.on('sos:broadcast', (data: WSSOSAlert) => {
+      toast.error(`🆘 Emergency nearby! ${data.userName} needs help!`, {
+        duration: 15000,
+      });
+    });
+
+    const unsubSOSUpdate = sdk.socket.on('sos:update', (data: WSSOSUpdate) => {
       if (data.type === 'SOS_RESPONDER_ACCEPTED') {
-        toast.success(`${data.responderName} is coming to help!`);
+        toast.success(`Help is on the way!`);
       } else if (data.type === 'SOS_RESPONDER_ARRIVED') {
-        toast.success(`${data.responderName} has arrived!`);
+        toast.success(`Help has arrived!`);
       } else if (data.type === 'SOS_RESOLVED') {
         toast.success('SOS alert has been resolved');
       }
     });
 
-    socketRef.current.on('sos:guardian-alert', (data) => {
+    const unsubGuardian = sdk.socket.on('sos:guardian-alert', (data) => {
       toast.error(`🆘 Emergency: ${data.userName} triggered an SOS!`, {
         duration: 15000,
       });
     });
 
-    socketRef.current.on('sos:precise-location', (data) => {
+    const unsubPrecise = sdk.socket.on('sos:precise-location', (data) => {
       toast.success('Precise location received');
       console.log('Precise location:', data.location);
     });
-  }, [updateParticipantLocation, showVerificationModal, setActiveAlert, setNearbyAlerts]);
 
-  const disconnect = useCallback(() => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+    // Nearby updates
+    const unsubNearby = sdk.socket.on('nearby:update', (data: WSNearbyUpdate) => {
+      // Update nearby alerts for SOS
+      const sosAlerts = data.runners
+        .filter((r) => r.status === 'sos_active')
+        .map((r) => ({
+          id: r.userId,
+          userId: r.userId,
+          displayName: r.displayName,
+          location: { latitude: 0, longitude: 0 }, // Would need actual location
+          distance: r.distance,
+          triggeredAt: new Date(),
+        }));
+      
+      if (sosAlerts.length > 0) {
+        setNearbyAlerts(sosAlerts);
+      }
+    });
+
+    // Return cleanup function
+    return () => {
+      unsubLocation();
+      unsubJoined();
+      unsubLeft();
+      unsubSOSVerify();
+      unsubSOSAlert();
+      unsubSOSBroadcast();
+      unsubSOSUpdate();
+      unsubGuardian();
+      unsubPrecise();
+      unsubNearby();
+    };
+  }, [updateParticipantLocation, showVerificationModal, setNearbyAlerts]);
+
+  // Connect when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      sdk.connectSocket();
+      const cleanup = setupListeners();
+      
+      return () => {
+        cleanup();
+      };
+    } else {
+      sdk.disconnectSocket();
     }
-  }, []);
+  }, [isAuthenticated, setupListeners]);
 
-  const emit = useCallback((event: string, data: unknown) => {
-    if (socketRef.current?.connected) {
-      socketRef.current.emit(event, data);
+  // Auto-join session when active
+  useEffect(() => {
+    if (activeSession?.id && sdk.isSocketConnected) {
+      sdk.socket.joinSession(activeSession.id);
     }
-  }, []);
+  }, [activeSession?.id]);
 
+  // Helper methods
   const joinSession = useCallback((sessionId: string) => {
-    emit('session:join', { sessionId });
-  }, [emit]);
+    sdk.socket.joinSession(sessionId);
+  }, []);
 
   const leaveSession = useCallback((sessionId: string) => {
-    emit('session:leave', { sessionId });
-  }, [emit]);
+    sdk.socket.leaveSession(sessionId);
+  }, []);
 
   const updateLocation = useCallback((
     latitude: number,
@@ -128,37 +151,36 @@ export function useSocket() {
     heading?: number,
     sessionId?: string
   ) => {
-    emit('location:update', { latitude, longitude, speed, heading, sessionId });
-  }, [emit]);
+    sdk.socket.sendLocationUpdate({
+      latitude,
+      longitude,
+      speed,
+      heading,
+      timestamp: Date.now(),
+    });
+  }, []);
 
-  // Auto-connect when authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      connect();
-    } else {
-      disconnect();
-    }
+  const subscribeToNearby = useCallback((latitude: number, longitude: number, radius?: number) => {
+    sdk.socket.subscribeToNearby(latitude, longitude, radius);
+  }, []);
 
-    return () => {
-      disconnect();
-    };
-  }, [isAuthenticated, connect, disconnect]);
+  const triggerSOS = useCallback((latitude: number, longitude: number) => {
+    sdk.socket.triggerSOS(latitude, longitude, 'MANUAL');
+  }, []);
 
-  // Auto-join session when active
-  useEffect(() => {
-    if (activeSession?.id) {
-      joinSession(activeSession.id);
-    }
-  }, [activeSession?.id, joinSession]);
+  const respondToSOS = useCallback((alertId: string, accepted: boolean, latitude?: number, longitude?: number) => {
+    sdk.socket.respondToSOS(alertId, accepted, latitude, longitude);
+  }, []);
 
   return {
-    socket: socketRef.current,
-    connect,
-    disconnect,
-    emit,
+    isConnected: sdk.isSocketConnected,
+    connect: () => sdk.connectSocket(),
+    disconnect: () => sdk.disconnectSocket(),
     joinSession,
     leaveSession,
     updateLocation,
+    subscribeToNearby,
+    triggerSOS,
+    respondToSOS,
   };
 }
-

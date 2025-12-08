@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@safrun/sdk": "*",
     "@tanstack/react-query": "^5.17.0",
     "axios": "^1.6.5",
     "class-variance-authority": "^0.7.0",

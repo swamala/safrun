@@ -52,6 +52,67 @@ export class NearbyService {
     };
   }
 
+  async findNearbySessions(
+    userId: string,
+    dto: { latitude: number; longitude: number; radiusMeters?: number },
+  ): Promise<any> {
+    const radius = dto.radiusMeters || 5000; // 5km default
+
+    // Find sessions that are scheduled or active with a start location
+    const sessions = await this.prisma.runSession.findMany({
+      where: {
+        status: { in: ['SCHEDULED', 'ACTIVE'] },
+        startLatitude: { not: null },
+        startLongitude: { not: null },
+        privacy: 'PUBLIC',
+      },
+      include: {
+        creator: {
+          select: { profile: { select: { displayName: true } } },
+        },
+        _count: {
+          select: { participants: { where: { status: 'JOINED' } } },
+        },
+      },
+    });
+
+    // Filter by distance
+    const nearbySessions = sessions
+      .map((session) => {
+        const distance = this.calculateDistance(
+          dto.latitude,
+          dto.longitude,
+          session.startLatitude!,
+          session.startLongitude!,
+        );
+        return { session, distance };
+      })
+      .filter(({ distance }) => distance <= radius)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10);
+
+    return {
+      sessions: nearbySessions.map(({ session, distance }) => ({
+        sessionId: session.id,
+        name: session.name,
+        description: session.description,
+        creatorName: session.creator.profile?.displayName || 'Unknown',
+        participantCount: session._count.participants,
+        maxParticipants: session.maxParticipants,
+        distance,
+        status: session.status,
+        scheduledStartAt: session.scheduledStartAt,
+        location: {
+          latitude: session.startLatitude!,
+          longitude: session.startLongitude!,
+        },
+      })),
+      searchLocation: { latitude: dto.latitude, longitude: dto.longitude },
+      radiusMeters: radius,
+      count: nearbySessions.length,
+    };
+  }
+
   async findRunnersInSession(
     userId: string,
     sessionId: string,
@@ -157,6 +218,26 @@ export class NearbyService {
     }
 
     return runners.slice(0, 20);
+  }
+
+  private calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
   }
 }
 

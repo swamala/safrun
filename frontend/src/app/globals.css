@@ -4,7 +4,7 @@
 
 /* ============================================
    🎨 SAFRUN Design System - 2025
-   Premium, Modern, Consistent
+   Premium Mobile App UI Matching Landing Page
    ============================================ */
 
 @layer base {
@@ -12,102 +12,115 @@
      CSS Variables - Light Mode
      ---------------------------------------- */
   :root {
-    /* Core */
-    --background: 250 250 250;
-    --background-rgb: 250, 250, 250;
-    --foreground: 15 23 42;
-    --foreground-rgb: 15, 23, 42;
+    /* Core Backgrounds */
+    --background: 247 249 252;           /* #F7F9FC - Light Gray Background */
+    --background-rgb: 247, 249, 252;
+    --foreground: 14 23 42;              /* #0E172A - Navy for headings */
+    --foreground-rgb: 14, 23, 42;
     
-    /* Surface */
+    /* Surface Layers */
     --surface: 255 255 255;
     --surface-elevated: 255 255 255;
-    --surface-muted: 248 250 252;
+    --surface-muted: 247 249 252;
     
     /* Card */
     --card: 255 255 255;
-    --card-foreground: 15 23 42;
+    --card-foreground: 14 23 42;
     
-    /* Brand */
-    --primary: 249 115 22;
+    /* Brand - SAFRUN Orange */
+    --primary: 255 138 0;                /* #FF8A00 */
+    --primary-end: 255 94 0;             /* #FF5E00 */
     --primary-foreground: 255 255 255;
     
-    /* Secondary */
-    --secondary: 241 245 249;
-    --secondary-foreground: 30 41 59;
+    /* Secondary - Navy */
+    --secondary: 14 23 42;               /* #0E172A */
+    --secondary-foreground: 255 255 255;
     
-    /* Muted - DARKER for better light mode contrast */
+    /* Accents */
+    --accent-blue: 230 244 255;          /* #E6F4FF - Sky Blue */
+    --accent-green: 223 247 230;         /* #DFF7E6 - Soft Green */
+    
+    /* Muted */
     --muted: 241 245 249;
-    --muted-foreground: 71 85 105;
+    --muted-foreground: 75 85 99;        /* #4B5563 - Body text */
     
-    /* Accent */
-    --accent: 34 197 94;
-    --accent-foreground: 255 255 255;
-    
-    /* Destructive */
+    /* Success/Danger */
+    --success: 34 197 94;
+    --success-foreground: 255 255 255;
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
     
     /* Border & Input */
-    --border: 203 213 225;
-    --border-muted: 226 232 240;
-    --input: 203 213 225;
-    --ring: 249 115 22;
+    --border: 226 232 240;
+    --border-muted: 241 245 249;
+    --input: 226 232 240;
+    --ring: 255 138 0;
     
-    /* Grid opacity */
-    --grid-opacity: 0.06;
+    /* Grid */
+    --grid-opacity: 0.04;
     
     /* Shadows */
     --shadow-color: 0 0 0;
-    --shadow-opacity: 0.1;
+    --shadow-opacity: 0.08;
+    
+    /* Radius - Modern 18-24px */
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --radius-full: 9999px;
   }
 
   /* ----------------------------------------
-     CSS Variables - Dark Mode
+     CSS Variables - Dark Mode (#0E172A Navy)
      ---------------------------------------- */
   .dark {
     /* Core - Deep Navy */
-    --background: 10 14 25;
-    --background-rgb: 10, 14, 25;
-    --foreground: 248 250 252;
-    --foreground-rgb: 248, 250, 252;
+    --background: 14 23 42;              /* #0E172A */
+    --background-rgb: 14, 23, 42;
+    --foreground: 255 255 255;           /* White for headings */
+    --foreground-rgb: 255, 255, 255;
     
     /* Surface */
-    --surface: 15 23 42;
+    --surface: 20 30 52;
     --surface-elevated: 30 41 59;
-    --surface-muted: 15 23 42;
+    --surface-muted: 20 30 52;
     
     /* Card */
-    --card: 20 27 45;
-    --card-foreground: 248 250 252;
+    --card: 20 30 52;
+    --card-foreground: 255 255 255;
     
     /* Brand */
-    --primary: 251 146 60;
-    --primary-foreground: 10 14 25;
+    --primary: 255 138 0;
+    --primary-end: 255 94 0;
+    --primary-foreground: 255 255 255;
     
     /* Secondary */
     --secondary: 30 41 59;
-    --secondary-foreground: 203 213 225;
+    --secondary-foreground: 203 213 225;  /* #CBD5E1 - Dark mode body */
+    
+    /* Accents - Muted for dark */
+    --accent-blue: 30 58 82;
+    --accent-green: 30 58 50;
     
     /* Muted */
     --muted: 30 41 59;
-    --muted-foreground: 148 163 184;
+    --muted-foreground: 203 213 225;     /* #CBD5E1 */
     
-    /* Accent */
-    --accent: 74 222 128;
-    --accent-foreground: 10 14 25;
-    
-    /* Destructive */
+    /* Success/Danger */
+    --success: 74 222 128;
+    --success-foreground: 14 23 42;
     --destructive: 248 113 113;
-    --destructive-foreground: 10 14 25;
+    --destructive-foreground: 14 23 42;
     
     /* Border & Input */
     --border: 51 65 85;
     --border-muted: 30 41 59;
     --input: 51 65 85;
-    --ring: 251 146 60;
+    --ring: 255 138 0;
     
-    /* Grid opacity */
-    --grid-opacity: 0.06;
+    /* Grid */
+    --grid-opacity: 0.05;
     
     /* Shadows */
     --shadow-color: 0 0 0;
@@ -135,46 +148,54 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     font-size: 1rem;
     line-height: 1.6;
+    font-weight: 400;
   }
 
   /* ----------------------------------------
-     Typography System
+     Typography System - Plus Jakarta Sans
      ---------------------------------------- */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-outfit), 'Outfit', system-ui, sans-serif;
+    font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
     color: rgb(var(--foreground));
     text-wrap: balance;
+    font-weight: 700;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl font-extrabold tracking-tight;
+    @apply text-4xl md:text-5xl tracking-tight;
+    font-weight: 800;
     line-height: 1.1;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl font-bold;
+    @apply text-3xl md:text-4xl;
+    font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl font-semibold;
+    @apply text-2xl md:text-3xl;
+    font-weight: 700;
     letter-spacing: -0.015em;
     line-height: 1.25;
   }
 
   h4 {
-    @apply text-xl font-semibold;
+    @apply text-xl;
+    font-weight: 600;
     line-height: 1.3;
   }
 
   h5 {
-    @apply text-lg font-semibold;
+    @apply text-lg;
+    font-weight: 600;
     line-height: 1.4;
   }
 
   h6 {
-    @apply text-base font-semibold;
+    @apply text-base;
+    font-weight: 600;
     line-height: 1.5;
   }
 
@@ -194,11 +215,12 @@
 
   /* Focus States */
   :focus-visible {
-    @apply outline-none ring-2 ring-orange-500/50 ring-offset-2;
+    @apply outline-none ring-2 ring-offset-2;
+    ring-color: rgb(var(--ring) / 0.5);
   }
 
   .dark :focus-visible {
-    @apply ring-orange-400/50 ring-offset-slate-900;
+    @apply ring-offset-slate-900;
   }
 }
 
@@ -211,27 +233,31 @@
      Typography Classes
      ---------------------------------------- */
   .heading-1 {
-    @apply font-display text-4xl md:text-5xl font-extrabold tracking-tight;
+    @apply text-4xl md:text-5xl tracking-tight;
+    font-weight: 800;
     line-height: 1.1;
     color: rgb(var(--foreground));
   }
 
   .heading-2 {
-    @apply font-display text-3xl md:text-4xl font-bold;
+    @apply text-3xl md:text-4xl;
+    font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.2;
     color: rgb(var(--foreground));
   }
 
   .heading-3 {
-    @apply font-display text-2xl md:text-3xl font-semibold;
+    @apply text-2xl md:text-3xl;
+    font-weight: 700;
     letter-spacing: -0.015em;
     line-height: 1.25;
     color: rgb(var(--foreground));
   }
 
   .heading-4 {
-    @apply font-display text-xl font-semibold;
+    @apply text-xl;
+    font-weight: 600;
     line-height: 1.3;
     color: rgb(var(--foreground));
   }
@@ -239,11 +265,13 @@
   .text-body {
     @apply text-base leading-relaxed;
     color: rgb(var(--muted-foreground));
+    font-weight: 400;
   }
 
   .text-body-lg {
     @apply text-lg leading-relaxed;
     color: rgb(var(--muted-foreground));
+    font-weight: 400;
   }
 
   .text-muted {
@@ -253,30 +281,43 @@
 
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #FF7A18 0%, #FFB347 100%);
+    background-image: linear-gradient(135deg, #FF8A00 0%, #FF5E00 100%);
+  }
+
+  .text-label {
+    @apply text-sm;
+    font-weight: 500;
+    color: rgb(var(--foreground));
+  }
+
+  .text-cta {
+    @apply text-base;
+    font-weight: 600;
+    color: rgb(var(--foreground));
   }
 
   /* ----------------------------------------
-     Button System
+     Button System - Pill Style (rounded-full)
      ---------------------------------------- */
   .btn {
     @apply inline-flex items-center justify-center gap-2;
     @apply font-semibold transition-all duration-300;
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply rounded-xl;
+    @apply rounded-full;  /* Pill button */
     font-family: var(--font-plus-jakarta);
+    font-weight: 600;
   }
 
   .btn-primary {
     @apply text-white;
-    background: linear-gradient(135deg, #FF8A2B 0%, #FF6A00 100%);
-    box-shadow: 0 4px 24px rgba(255, 140, 0, 0.35);
+    background: linear-gradient(135deg, #FF8A00 0%, #FF5E00 100%);
+    box-shadow: 0 4px 24px rgba(255, 138, 0, 0.35);
   }
 
   .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(255, 140, 0, 0.45);
+    box-shadow: 0 8px 32px rgba(255, 138, 0, 0.45);
   }
 
   .btn-primary:active:not(:disabled) {
@@ -285,43 +326,50 @@
 
   .btn-secondary {
     @apply border;
-    background: rgb(var(--surface));
-    border-color: rgb(var(--border));
-    color: rgb(var(--foreground));
+    background: rgb(14 23 42);  /* Navy */
+    color: white;
+    border-color: transparent;
   }
 
   .dark .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.1);
+    color: white;
   }
 
   .btn-secondary:hover:not(:disabled) {
     transform: translateY(-1px);
-    border-color: rgb(var(--primary));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
   }
 
   .btn-danger {
-    @apply bg-red-500 text-white;
+    @apply text-white;
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
     box-shadow: 0 4px 24px rgba(239, 68, 68, 0.35);
   }
 
   .btn-danger:hover:not(:disabled) {
-    @apply bg-red-600;
     transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.45);
   }
 
   .btn-success {
-    @apply bg-green-500 text-white;
+    @apply text-white;
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
     box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
   }
 
   .btn-success:hover:not(:disabled) {
-    @apply bg-green-600;
     transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.45);
   }
 
   .btn-ghost {
-    @apply bg-transparent;
+    @apply bg-transparent rounded-full;
     color: rgb(var(--muted-foreground));
   }
 
@@ -331,27 +379,30 @@
   }
 
   .btn-outline {
-    @apply border-2 bg-transparent;
+    @apply border-2 bg-transparent rounded-full;
     border-color: rgb(var(--border));
     color: rgb(var(--foreground));
   }
 
   .btn-outline:hover:not(:disabled) {
-    border-color: rgb(var(--primary));
-    background: rgb(var(--primary) / 0.1);
+    border-color: #FF8A00;
+    background: rgba(255, 138, 0, 0.08);
   }
 
   /* Button Sizes */
   .btn-sm {
-    @apply px-4 py-2 text-sm;
+    @apply px-5 py-2 text-sm;
+    font-weight: 500;
   }
 
   .btn-md {
     @apply px-6 py-3 text-base;
+    font-weight: 600;
   }
 
   .btn-lg {
     @apply px-8 py-4 text-lg;
+    font-weight: 600;
   }
 
   .btn-icon {
@@ -359,42 +410,49 @@
   }
 
   /* ----------------------------------------
-     Input System
+     Input System - 14-16px font, soft borders
      ---------------------------------------- */
   .input {
-    @apply w-full h-12 px-4 rounded-xl;
+    @apply w-full h-12 px-4;
+    border-radius: var(--radius-md);
     @apply transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-orange-500/30;
+    @apply focus:outline-none focus:ring-2;
     background: rgb(var(--surface));
-    border: 1px solid rgb(var(--border) / 0.5);
+    border: 1px solid rgb(var(--border) / 0.6);
     color: rgb(var(--foreground));
     font-family: var(--font-plus-jakarta);
+    font-size: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
   .input::placeholder {
-    color: rgb(var(--muted-foreground) / 0.6);
+    color: rgb(var(--muted-foreground) / 0.5);
   }
 
   .input:focus {
-    border-color: rgb(var(--primary) / 0.5);
+    border-color: rgba(255, 138, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.1);
   }
 
   .dark .input {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .dark .input:focus {
-    border-color: rgba(251, 146, 60, 0.5);
-    @apply ring-orange-400/30;
+    border-color: rgba(255, 138, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15);
   }
 
   .input-error {
-    @apply border-red-500 focus:ring-red-500/30;
+    @apply border-red-500 focus:border-red-500;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
   }
 
   .label {
-    @apply block text-sm font-medium mb-2;
+    @apply block text-sm mb-2;
+    font-weight: 500;
     color: rgb(var(--foreground));
   }
 
@@ -403,88 +461,126 @@
   }
 
   /* ----------------------------------------
-     Card System
+     Card System - Soft shadows (blur 24-32)
      ---------------------------------------- */
   .card {
-    @apply rounded-2xl overflow-hidden;
+    @apply overflow-hidden;
+    border-radius: var(--radius-lg);
     background: rgb(var(--card));
     border: 1px solid rgb(var(--border) / 0.5);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   }
 
   .dark .card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
   }
 
   .card-glass {
-    @apply rounded-2xl overflow-hidden backdrop-blur-xl;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    @apply overflow-hidden backdrop-blur-xl;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   }
 
   .dark .card-glass {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .card-elevated {
-    @apply rounded-2xl overflow-hidden;
+    @apply overflow-hidden;
+    border-radius: var(--radius-lg);
     background: rgb(var(--card));
-    box-shadow: 0 4px 24px rgb(var(--shadow-color) / var(--shadow-opacity));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .card-elevated {
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   /* ----------------------------------------
      Badge System
      ---------------------------------------- */
   .badge {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+    @apply inline-flex items-center px-3 py-1 text-xs;
+    border-radius: var(--radius-full);
+    font-weight: 600;
   }
 
   .badge-primary {
-    background: rgb(var(--primary) / 0.1);
-    color: #f97316;
-    border: 1px solid rgb(var(--primary) / 0.2);
+    background: rgba(255, 138, 0, 0.1);
+    color: #FF8A00;
+    border: 1px solid rgba(255, 138, 0, 0.2);
   }
 
   .dark .badge-primary {
-    background: rgba(251, 146, 60, 0.15);
-    color: #fb923c;
-    border-color: rgba(251, 146, 60, 0.3);
+    background: rgba(255, 138, 0, 0.15);
+    color: #FFB74D;
+    border-color: rgba(255, 138, 0, 0.3);
   }
 
   .badge-success {
-    @apply bg-green-100 text-green-700 border border-green-200;
+    background: rgba(34, 197, 94, 0.1);
+    color: #16A34A;
+    border: 1px solid rgba(34, 197, 94, 0.2);
   }
 
   .dark .badge-success {
-    @apply bg-green-500/15 text-green-400 border-green-500/30;
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ADE80;
+    border-color: rgba(34, 197, 94, 0.3);
   }
 
   .badge-danger {
-    @apply bg-red-100 text-red-700 border border-red-200;
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
   }
 
   .dark .badge-danger {
-    @apply bg-red-500/15 text-red-400 border-red-500/30;
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border-color: rgba(239, 68, 68, 0.3);
   }
 
   .badge-secondary {
-    background: rgb(var(--secondary));
-    color: rgb(var(--secondary-foreground));
+    background: rgb(var(--muted));
+    color: rgb(var(--muted-foreground));
+    border: 1px solid rgb(var(--border) / 0.5);
   }
 
   .dark .badge-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: rgb(var(--muted-foreground));
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .badge-blue {
+    background: #E6F4FF;
+    color: #0369A1;
+    border: 1px solid rgba(3, 105, 161, 0.2);
+  }
+
+  .dark .badge-blue {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60A5FA;
+    border-color: rgba(59, 130, 246, 0.3);
   }
 
   /* ----------------------------------------
      Navigation
      ---------------------------------------- */
   .nav-link {
-    @apply text-sm font-medium px-4 py-2.5 rounded-xl;
+    @apply text-sm px-4 py-2.5;
+    border-radius: var(--radius-md);
     @apply transition-all duration-200;
     color: rgb(var(--muted-foreground));
+    font-weight: 500;
   }
 
   .nav-link:hover {
@@ -497,13 +593,13 @@
   }
 
   .nav-link-active {
-    @apply text-orange-500;
-    background: rgb(var(--primary) / 0.1);
+    color: #FF8A00;
+    background: rgba(255, 138, 0, 0.1);
   }
 
   .dark .nav-link-active {
-    @apply text-orange-400;
-    background: rgba(251, 146, 60, 0.1);
+    color: #FFB74D;
+    background: rgba(255, 138, 0, 0.1);
   }
 
   /* ----------------------------------------
@@ -517,14 +613,16 @@
   }
 
   .dark .sidebar {
-    background: rgba(10, 14, 25, 0.95);
+    background: rgba(14, 23, 42, 0.97);
     border-color: rgba(255, 255, 255, 0.06);
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl;
-    @apply font-medium transition-all duration-200;
+    @apply flex items-center gap-3 px-4 py-3;
+    border-radius: var(--radius-md);
+    @apply transition-all duration-200;
     color: rgb(var(--muted-foreground));
+    font-weight: 500;
   }
 
   .sidebar-link:hover {
@@ -537,13 +635,13 @@
   }
 
   .sidebar-link-active {
-    @apply text-orange-500;
-    background: rgb(var(--primary) / 0.1);
+    color: #FF8A00;
+    background: rgba(255, 138, 0, 0.1);
   }
 
   .dark .sidebar-link-active {
-    @apply text-orange-400;
-    background: rgba(251, 146, 60, 0.1);
+    color: #FFB74D;
+    background: rgba(255, 138, 0, 0.1);
   }
 
   /* ----------------------------------------
@@ -561,20 +659,61 @@
     @apply py-8 md:py-12;
   }
 
+  /* Spacing Grid: 8/12/16/24/32 */
+  .space-grid-1 { padding: 8px; }
+  .space-grid-2 { padding: 12px; }
+  .space-grid-3 { padding: 16px; }
+  .space-grid-4 { padding: 24px; }
+  .space-grid-5 { padding: 32px; }
+
+  .gap-grid-1 { gap: 8px; }
+  .gap-grid-2 { gap: 12px; }
+  .gap-grid-3 { gap: 16px; }
+  .gap-grid-4 { gap: 24px; }
+  .gap-grid-5 { gap: 32px; }
+
   /* ----------------------------------------
      Auth Pages Card
      ---------------------------------------- */
   .auth-card {
-    @apply w-full max-w-md p-8 rounded-2xl;
+    @apply w-full max-w-md p-8;
+    border-radius: var(--radius-lg);
     background: rgb(var(--card));
     border: 1px solid rgb(var(--border) / 0.5);
-    box-shadow: 0 4px 24px rgb(var(--shadow-color) / var(--shadow-opacity));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   }
 
   .dark .auth-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ----------------------------------------
+     Accent Backgrounds
+     ---------------------------------------- */
+  .bg-accent-blue {
+    background: #E6F4FF;
+  }
+
+  .dark .bg-accent-blue {
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .bg-accent-green {
+    background: #DFF7E6;
+  }
+
+  .dark .bg-accent-green {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .bg-accent-orange {
+    background: rgba(255, 138, 0, 0.1);
+  }
+
+  .dark .bg-accent-orange {
+    background: rgba(255, 138, 0, 0.1);
   }
 }
 
@@ -598,15 +737,30 @@
     background-color: rgb(var(--surface-elevated));
   }
 
+  .bg-navy {
+    background-color: #0E172A;
+  }
+
   .bg-glass {
     @apply backdrop-blur-xl;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.4);
   }
 
   .dark .bg-glass {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* ----------------------------------------
+     SAFRUN Gradients
+     ---------------------------------------- */
+  .bg-gradient-safrun {
+    background: linear-gradient(135deg, #FF8A00 0%, #FF5E00 100%);
+  }
+
+  .bg-gradient-safrun-soft {
+    background: linear-gradient(135deg, rgba(255, 138, 0, 0.1) 0%, rgba(255, 94, 0, 0.05) 100%);
   }
 
   /* ----------------------------------------
@@ -624,27 +778,40 @@
      ---------------------------------------- */
   .bg-gradient-hero {
     background: 
-      radial-gradient(ellipse 100% 80% at 50% 0%, rgb(var(--primary) / 0.08), transparent 50%),
-      radial-gradient(ellipse 60% 50% at 100% 0%, rgb(59 130 246 / 0.05), transparent 50%),
-      radial-gradient(ellipse 60% 50% at 0% 100%, rgb(var(--accent) / 0.03), transparent 50%);
+      radial-gradient(ellipse 100% 80% at 50% 0%, rgba(255, 138, 0, 0.08), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 100% 0%, rgba(59, 130, 246, 0.05), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 0% 100%, rgba(34, 197, 94, 0.03), transparent 50%);
   }
 
   .dark .bg-gradient-hero {
     background: 
-      radial-gradient(ellipse 100% 80% at 50% 0%, rgb(var(--primary) / 0.12), transparent 50%),
-      radial-gradient(ellipse 60% 50% at 100% 0%, rgb(59 130 246 / 0.08), transparent 50%),
-      radial-gradient(ellipse 60% 50% at 0% 100%, rgb(var(--accent) / 0.05), transparent 50%);
+      radial-gradient(ellipse 100% 80% at 50% 0%, rgba(255, 138, 0, 0.12), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 100% 0%, rgba(59, 130, 246, 0.08), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 0% 100%, rgba(34, 197, 94, 0.05), transparent 50%);
   }
 
   /* ----------------------------------------
      Font Utilities
      ---------------------------------------- */
-  .font-display {
-    font-family: var(--font-outfit), 'Outfit', system-ui, sans-serif;
-  }
-
   .font-body {
     font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Font weights per spec */
+  .font-heading {
+    font-weight: 700;
+  }
+
+  .font-heading-bold {
+    font-weight: 800;
+  }
+
+  .font-label {
+    font-weight: 500;
+  }
+
+  .font-cta {
+    font-weight: 600;
   }
 
   /* ----------------------------------------
@@ -660,14 +827,65 @@
   }
 
   /* ----------------------------------------
-     Shadow Utilities
+     Shadow Utilities - Soft & Realistic
      ---------------------------------------- */
+  .shadow-soft {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .shadow-soft-md {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-soft-lg {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .shadow-soft {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .dark .shadow-soft-md {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .dark .shadow-soft-lg {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
   .shadow-glow-orange {
-    box-shadow: 0 4px 24px rgba(255, 140, 0, 0.35);
+    box-shadow: 0 4px 24px rgba(255, 138, 0, 0.35);
   }
 
   .shadow-glow-orange-lg {
-    box-shadow: 0 8px 40px rgba(255, 140, 0, 0.4);
+    box-shadow: 0 8px 40px rgba(255, 138, 0, 0.4);
+  }
+
+  .shadow-glow-green {
+    box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
+  }
+
+  .shadow-glow-red {
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.35);
+  }
+
+  /* ----------------------------------------
+     Border Radius Utilities
+     ---------------------------------------- */
+  .rounded-safrun-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .rounded-safrun {
+    border-radius: var(--radius-md);
+  }
+
+  .rounded-safrun-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .rounded-safrun-xl {
+    border-radius: var(--radius-xl);
   }
 }
 
@@ -682,7 +900,7 @@
 }
 
 .dark .leaflet-container {
-  background: rgb(20 27 45);
+  background: rgb(20 30 52);
 }
 
 .leaflet-control-attribution {
@@ -711,6 +929,6 @@
 
 /* Selection */
 ::selection {
-  background: rgb(var(--primary) / 0.2);
+  background: rgba(255, 138, 0, 0.2);
   color: rgb(var(--foreground));
 }

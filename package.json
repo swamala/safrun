@@ -1,0 +1,27 @@
+{
+  "name": "safrun-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "mobile",
+    "backend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "dev:mobile": "npm run start --workspace=mobile",
+    "dev:backend": "npm run start:dev --workspace=backend",
+    "build": "npm run build --workspaces --if-present",
+    "build:sdk": "npm run build --workspace=@safrun/sdk",
+    "lint": "npm run lint --workspaces --if-present",
+    "clean": "rm -rf node_modules && npm run clean --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

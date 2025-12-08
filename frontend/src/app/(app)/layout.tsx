@@ -13,8 +13,6 @@ import {
   Bell,
   Menu,
   X,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/stores/auth.store';
@@ -23,8 +21,15 @@ import { useSocket } from '@/hooks/useSocket';
 import { api } from '@/lib/api';
 import { Avatar } from '@/components/ui/Avatar';
 import { Logo } from '@/components/ui/Logo';
+import { ThemeToggle, useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+
+/**
+ * SAFRUN App Layout
+ * Consistent navigation with SAFRUN design system
+ * Uses Plus Jakarta Sans, 18-24px radius, soft shadows
+ */
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -39,26 +44,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { activeAlert, nearbyAlerts } = useSOSStore();
+  const { isDark } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
 
   // Initialize WebSocket connection
   useSocket();
-
-  useEffect(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const stored = localStorage.getItem('theme');
-    const dark = stored === 'dark' || (!stored && prefersDark);
-    setIsDark(dark);
-    document.documentElement.classList.toggle('dark', dark);
-  }, []);
-
-  const toggleTheme = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    document.documentElement.classList.toggle('dark', newDark);
-    localStorage.setItem('theme', newDark ? 'dark' : 'light');
-  };
 
   // Check for active SOS alerts
   useEffect(() => {
@@ -90,20 +80,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const hasAlerts = activeAlert || nearbyAlerts.length > 0;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-[#0a0e19]' : 'bg-[#fafafa]'}`}>
+    <div className="min-h-screen transition-colors duration-300 bg-background-light dark:bg-background-dark">
       {/* Top Navigation */}
       <header 
-        className="fixed top-0 left-0 right-0 z-50 h-16 backdrop-blur-xl"
-        style={{
-          background: isDark ? 'rgba(10, 14, 25, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-          borderBottom: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.8)',
-        }}
+        className={cn(
+          'fixed top-0 left-0 right-0 z-50 h-16 backdrop-blur-xl',
+          'bg-white/90 dark:bg-navy-900/95',
+          'border-b border-navy-200/50 dark:border-white/[0.06]'
+        )}
       >
         <div className="flex items-center justify-between px-4 lg:px-6 h-full">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className={cn(
+                'lg:hidden p-2 rounded-xl transition-colors',
+                'text-text-light-body dark:text-text-dark-body',
+                'hover:bg-navy-100 dark:hover:bg-white/5'
+              )}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -114,48 +108,43 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-3">
             {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-              style={{
-                background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(241,245,249,0.8)',
-                border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.5)',
-              }}
-            >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+            <ThemeToggle size="md" />
 
             {/* Notifications */}
             <Link
               href="/sos"
               className={cn(
-                'relative p-2.5 rounded-xl transition-colors',
+                'relative p-2.5 rounded-xl transition-all duration-200',
                 hasAlerts
-                  ? 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                  ? 'bg-danger-100 dark:bg-danger-500/15 text-danger-600 dark:text-danger-400'
+                  : cn(
+                      'text-text-light-body dark:text-text-dark-body',
+                      'bg-navy-100 dark:bg-white/5',
+                      'border border-navy-200/50 dark:border-white/10',
+                      'hover:bg-navy-200 dark:hover:bg-white/10'
+                    )
               )}
-              style={!hasAlerts ? {
-                background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(241,245,249,0.8)',
-                border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.5)',
-              } : {}}
             >
               <Bell className="w-5 h-5" />
               {hasAlerts && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-danger-500 rounded-full animate-pulse" />
               )}
             </Link>
 
             {/* User Menu */}
             <Link 
               href="/settings" 
-              className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className={cn(
+                'flex items-center gap-3 px-3 py-2 rounded-xl transition-colors',
+                'hover:bg-navy-100 dark:hover:bg-white/5'
+              )}
             >
               <Avatar
                 src={user?.avatarUrl}
                 name={user?.displayName || 'User'}
                 size="sm"
               />
-              <span className="hidden md:block text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="hidden md:block text-sm font-medium text-text-light-heading dark:text-text-dark-body">
                 {user?.displayName}
               </span>
             </Link>
@@ -178,11 +167,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25 }}
-              className="fixed left-0 top-0 bottom-0 w-72"
-              style={{
-                background: isDark ? '#0a0e19' : 'white',
-                borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.8)',
-              }}
+              className={cn(
+                'fixed left-0 top-0 bottom-0 w-72',
+                'bg-white dark:bg-navy-900',
+                'border-r border-navy-200/50 dark:border-white/[0.06]'
+              )}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 pt-20">
@@ -195,23 +184,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                          'flex items-center gap-3 px-4 py-3 rounded-[18px] transition-all duration-200',
                           isActive
-                            ? 'bg-orange-500/10 text-orange-500 dark:text-orange-400'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                            ? 'bg-safrun-500/10 text-safrun-500 dark:text-safrun-400 font-medium'
+                            : 'text-text-light-body dark:text-text-dark-body hover:bg-navy-100 dark:hover:bg-white/5'
                         )}
                       >
                         <item.icon className="w-5 h-5" />
-                        <span className="font-medium">{item.name}</span>
+                        <span>{item.name}</span>
                         {item.name === 'SOS Center' && hasAlerts && (
-                          <span className="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                          <span className="ml-auto w-2 h-2 bg-danger-500 rounded-full animate-pulse" />
                         )}
                       </Link>
                     );
                   })}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                    className={cn(
+                      'w-full flex items-center gap-3 px-4 py-3 rounded-[18px] transition-colors',
+                      'text-text-light-body dark:text-text-dark-body',
+                      'hover:bg-navy-100 dark:hover:bg-white/5'
+                    )}
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Sign Out</span>
@@ -225,11 +218,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Desktop Sidebar */}
       <aside 
-        className="hidden lg:fixed lg:left-0 lg:top-16 lg:bottom-0 lg:w-64 lg:flex lg:flex-col"
-        style={{
-          background: isDark ? 'rgba(10, 14, 25, 0.95)' : 'white',
-          borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.8)',
-        }}
+        className={cn(
+          'hidden lg:fixed lg:left-0 lg:top-16 lg:bottom-0 lg:w-64 lg:flex lg:flex-col',
+          'bg-white dark:bg-navy-900/97',
+          'border-r border-navy-200/50 dark:border-white/[0.06]'
+        )}
       >
         <nav className="flex-1 p-4 space-y-1">
           {navigation.map((item) => {
@@ -239,30 +232,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                  'flex items-center gap-3 px-4 py-3 rounded-[18px] transition-all duration-200',
                   isActive
-                    ? 'bg-orange-500/10 text-orange-500 dark:text-orange-400 font-medium'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                    ? 'bg-safrun-500/10 text-safrun-500 dark:text-safrun-400 font-medium'
+                    : 'text-text-light-body dark:text-text-dark-body hover:bg-navy-100 dark:hover:bg-white/5'
                 )}
               >
                 <item.icon className="w-5 h-5" />
                 <span>{item.name}</span>
                 {item.name === 'SOS Center' && hasAlerts && (
-                  <span className="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="ml-auto w-2 h-2 bg-danger-500 rounded-full animate-pulse" />
                 )}
               </Link>
             );
           })}
         </nav>
-        <div 
-          className="p-4"
-          style={{
-            borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.8)',
-          }}
-        >
+        <div className="p-4 border-t border-navy-200/50 dark:border-white/[0.06]">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            className={cn(
+              'w-full flex items-center gap-3 px-4 py-3 rounded-[18px] transition-colors',
+              'text-text-light-body dark:text-text-dark-body',
+              'hover:bg-navy-100 dark:hover:bg-white/5'
+            )}
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>
@@ -275,14 +267,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="p-4 lg:p-8">{children}</div>
       </main>
 
-      {/* SOS Quick Button (Mobile) */}
+      {/* SOS Quick Button (Mobile) - Gradient red with glow */}
       <Link
         href="/sos"
-        className="lg:hidden fixed bottom-6 right-6 z-30 w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-        style={{
-          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-          boxShadow: '0 4px 24px rgba(239, 68, 68, 0.4)',
-        }}
+        className={cn(
+          'lg:hidden fixed bottom-6 right-6 z-30 w-16 h-16 rounded-full',
+          'flex items-center justify-center',
+          'bg-gradient-to-br from-danger-500 to-danger-600',
+          'shadow-glow-red',
+          'transition-transform hover:scale-105 active:scale-95'
+        )}
       >
         <AlertTriangle className="w-7 h-7 text-white" />
       </Link>

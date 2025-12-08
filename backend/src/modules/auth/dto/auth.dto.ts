@@ -7,6 +7,8 @@ import {
   MaxLength,
   IsPhoneNumber,
   ValidateIf,
+  IsEnum,
+  IsBoolean,
 } from 'class-validator';
 
 export class SignUpDto {
@@ -68,6 +70,15 @@ export class DeviceInfoDto {
   @ApiPropertyOptional()
   deviceName?: string;
 
+  @ApiPropertyOptional({ description: 'Device model (e.g., iPhone 15 Pro)' })
+  deviceModel?: string;
+
+  @ApiPropertyOptional({ description: 'OS version (e.g., iOS 17.2)' })
+  osVersion?: string;
+
+  @ApiPropertyOptional({ description: 'App version (e.g., 1.0.0)' })
+  appVersion?: string;
+
   @ApiPropertyOptional()
   fingerprint?: string;
 
@@ -77,8 +88,19 @@ export class DeviceInfoDto {
   @ApiPropertyOptional()
   ipAddress?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Expo push notification token' })
   pushToken?: string;
+}
+
+export class RegisterPushTokenDto {
+  @ApiProperty({ description: 'Expo push notification token' })
+  @IsString()
+  pushToken: string;
+
+  @ApiPropertyOptional({ description: 'Device ID to associate with token' })
+  @IsOptional()
+  @IsString()
+  deviceId?: string;
 }
 
 export class AuthUserDto {
@@ -122,3 +144,81 @@ export class TokenPayloadDto {
   exp: number;
 }
 
+export class DeviceResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ enum: ['IOS', 'ANDROID', 'WEB'] })
+  deviceType: 'IOS' | 'ANDROID' | 'WEB';
+
+  @ApiPropertyOptional()
+  deviceName?: string | null;
+
+  @ApiPropertyOptional()
+  deviceModel?: string | null;
+
+  @ApiPropertyOptional()
+  osVersion?: string | null;
+
+  @ApiProperty()
+  isActive: boolean;
+
+  @ApiProperty()
+  lastActiveAt: Date;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  isCurrent: boolean;
+}
+
+export class DeviceListResponseDto {
+  @ApiProperty({ type: [DeviceResponseDto] })
+  devices: DeviceResponseDto[];
+
+  @ApiProperty()
+  total: number;
+}
+
+export class UpdateDeviceDto {
+  @ApiPropertyOptional({ description: 'Device name (e.g., My iPhone)' })
+  @IsOptional()
+  @IsString()
+  deviceName?: string;
+
+  @ApiPropertyOptional({ description: 'Device model (e.g., iPhone 15 Pro)' })
+  @IsOptional()
+  @IsString()
+  deviceModel?: string;
+
+  @ApiPropertyOptional({ description: 'OS version (e.g., iOS 17.2)' })
+  @IsOptional()
+  @IsString()
+  osVersion?: string;
+
+  @ApiPropertyOptional({ description: 'App version (e.g., 1.0.0)' })
+  @IsOptional()
+  @IsString()
+  appVersion?: string;
+}
+
+export class SessionResponseDto {
+  @ApiProperty({ type: AuthUserDto })
+  user: AuthUserDto;
+
+  @ApiProperty({ type: DeviceResponseDto })
+  currentDevice: DeviceResponseDto;
+
+  @ApiProperty()
+  activeDevices: number;
+
+  @ApiProperty()
+  maxDevices: number;
+
+  @ApiProperty()
+  sessionCreatedAt: Date;
+
+  @ApiProperty()
+  lastActivity: Date;
+}

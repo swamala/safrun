@@ -28,9 +28,23 @@ interface AuthenticatedSocket extends Socket {
 interface LocationUpdate {
   latitude: number;
   longitude: number;
+  altitude?: number;
+  accuracy?: number;
   speed?: number;
   heading?: number;
+  batteryLevel?: number;
+  timestamp?: number;
   sessionId?: string;
+  soloRunId?: string;
+}
+
+interface SOSBroadcast {
+  alertId: string;
+  userId: string;
+  userName: string;
+  location: { latitude: number; longitude: number };
+  distance?: number;
+  triggeredAt: Date;
 }
 
 @WebSocketGateway({
@@ -49,6 +63,7 @@ export class EventsGateway
   private readonly logger = new Logger(EventsGateway.name);
   private userSockets: Map<string, Set<string>> = new Map();
   private subscriber: Redis;
+  private nearbyUpdateInterval: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly jwtService: JwtService,
@@ -76,13 +91,55 @@ export class EventsGateway
       'sos:guardian',
       'sos:group',
       'sos:precise-location',
+      'sos:broadcast',
       'notification:push',
       'session:update',
+      'nearby:update',
+      'location:stream',
     );
 
     this.subscriber.on('message', (channel, message) => {
       this.handleRedisMessage(channel, message);
     });
+
+    // Start periodic nearby updates
+    this.startNearbyUpdates();
+  }
+
+  private startNearbyUpdates() {
+    // Send nearby updates every 10-15 seconds
+    this.nearbyUpdateInterval = setInterval(async () => {
+      await this.broadcastNearbyUpdates();
+    }, 12000);
+  }
+
+  private async broadcastNearbyUpdates() {
+    // For each connected user, send nearby runners update
+    for (const [userId, socketIds] of this.userSockets.entries()) {
+      try {
+        const position = await this.geoService.getRunnerPosition(userId);
+        if (!position) continue;
+
+        const nearbyRunners = await this.geoService.findNearbyRunners(
+          position.longitude,
+          position.latitude,
+          1000, // 1km default
+          20,
+          userId,
+        );
+
+        if (nearbyRunners.length > 0) {
+          for (const socketId of socketIds) {
+            this.server.to(socketId).emit('nearby:update', {
+              runners: nearbyRunners,
+              timestamp: Date.now(),
+            });
+          }
+        }
+      } catch (error) {
+        this.logger.debug(`Failed to send nearby update to ${userId}: ${(error as Error).message}`);
+      }
+    }
   }
 
   private handleRedisMessage(channel: string, message: string) {
@@ -108,8 +165,14 @@ export class EventsGateway
         case 'sos:precise-location':
           this.handlePreciseLocation(data);
           break;
+        case 'sos:broadcast':
+          this.handleSOSBroadcast(data);
+          break;
         case 'session:update':
           this.handleSessionUpdate(data);
+          break;
+        case 'nearby:update':
+          this.handleNearbyUpdateFromRedis(data);
           break;
       }
     } catch (error) {
@@ -185,13 +248,48 @@ export class EventsGateway
         userId,
         latitude: data.latitude,
         longitude: data.longitude,
+        altitude: data.altitude,
         speed: data.speed,
         heading: data.heading,
-        timestamp: Date.now(),
+        timestamp: data.timestamp || Date.now(),
       });
     }
 
     return { status: 'ok' };
+  }
+
+  @SubscribeMessage('location:stream')
+  async handleLocationStream(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { locations: LocationUpdate[]; sessionId?: string; soloRunId?: string },
+  ) {
+    const userId = client.data.user?.id;
+    if (!userId) return;
+
+    // Process batch of locations
+    for (const location of data.locations) {
+      await this.geoService.updateRunnerLocation(
+        userId,
+        location.longitude,
+        location.latitude,
+        data.sessionId,
+      );
+
+      // Broadcast to session if in one
+      if (data.sessionId) {
+        client.to(`session:${data.sessionId}`).emit('location:broadcast', {
+          userId,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          altitude: location.altitude,
+          speed: location.speed,
+          heading: location.heading,
+          timestamp: location.timestamp || Date.now(),
+        });
+      }
+    }
+
+    return { status: 'ok', processed: data.locations.length };
   }
 
   @SubscribeMessage('session:join')
@@ -250,12 +348,54 @@ export class EventsGateway
   @SubscribeMessage('sos:respond')
   async handleSOSResponse(
     @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() data: { alertId: string; accepted: boolean },
+    @MessageBody() data: { alertId: string; accepted: boolean; latitude?: number; longitude?: number },
   ) {
     const userId = client.data.user?.id;
     if (!userId) return;
 
     this.logger.log(`SOS response from ${userId}: ${data.accepted ? 'accepted' : 'declined'}`);
+
+    return { status: 'ok' };
+  }
+
+  @SubscribeMessage('sos:subscribe')
+  async handleSOSSubscribe(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { alertId: string },
+  ) {
+    const userId = client.data.user?.id;
+    if (!userId) return;
+
+    client.join(`sos:${data.alertId}`);
+    this.logger.log(`User ${userId} subscribed to SOS updates for ${data.alertId}`);
+
+    return { status: 'ok' };
+  }
+
+  @SubscribeMessage('nearby:subscribe')
+  async handleNearbySubscribe(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { latitude: number; longitude: number; radius?: number },
+  ) {
+    const userId = client.data.user?.id;
+    if (!userId) return;
+
+    // Update user position for nearby calculations
+    await this.geoService.updateRunnerLocation(userId, data.longitude, data.latitude);
+
+    // Send immediate nearby update
+    const nearbyRunners = await this.geoService.findNearbyRunners(
+      data.longitude,
+      data.latitude,
+      data.radius || 1000,
+      20,
+      userId,
+    );
+
+    client.emit('nearby:update', {
+      runners: nearbyRunners,
+      timestamp: Date.now(),
+    });
 
     return { status: 'ok' };
   }
@@ -272,6 +412,10 @@ export class EventsGateway
 
   sendToSession(sessionId: string, event: string, data: unknown) {
     this.server.to(`session:${sessionId}`).emit(event, data);
+  }
+
+  sendToSOS(alertId: string, event: string, data: unknown) {
+    this.server.to(`sos:${alertId}`).emit(event, data);
   }
 
   // Redis message handlers
@@ -296,6 +440,11 @@ export class EventsGateway
 
   private handleSOSUpdate(data: { type: string; userId: string; [key: string]: unknown }) {
     this.sendToUser(data.userId, 'sos:update', data);
+
+    // Also send to SOS room if alertId exists
+    if (data.alertId) {
+      this.sendToSOS(data.alertId as string, 'sos:update', data);
+    }
   }
 
   private handleGuardianAlert(data: {
@@ -329,8 +478,20 @@ export class EventsGateway
     this.sendToUser(data.responderId, 'sos:precise-location', data);
   }
 
+  private handleSOSBroadcast(data: SOSBroadcast) {
+    // Broadcast to all connected users in range (handled by nearby update)
+    this.server.emit('sos:broadcast', data);
+  }
+
   private handleSessionUpdate(data: { sessionId: string; [key: string]: unknown }) {
     this.sendToSession(data.sessionId, 'session:update', data);
+  }
+
+  private handleNearbyUpdateFromRedis(data: { userId: string; runners: unknown[] }) {
+    this.sendToUser(data.userId, 'nearby:update', {
+      runners: data.runners,
+      timestamp: Date.now(),
+    });
   }
 
   private extractToken(client: Socket): string | null {
@@ -345,5 +506,14 @@ export class EventsGateway
 
     return null;
   }
-}
 
+  // Cleanup on module destroy
+  async onModuleDestroy() {
+    if (this.nearbyUpdateInterval) {
+      clearInterval(this.nearbyUpdateInterval);
+    }
+    if (this.subscriber) {
+      await this.subscriber.quit();
+    }
+  }
+}

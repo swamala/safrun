@@ -1,23 +1,21 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { Providers } from './providers';
 import './globals.css';
 
-// Primary font for headings - Modern, geometric, tech-forward
-const outfit = Outfit({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-outfit',
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
+/**
+ * SAFRUN Root Layout
+ * Uses Plus Jakarta Sans as the primary font per design spec
+ * Font weights: 400 (body), 500-600 (labels/CTA), 700-800 (headings)
+ */
 
-// Secondary font for body text - Clean, professional, highly readable
+// Primary font - Plus Jakarta Sans (same as landing page)
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-plus-jakarta',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -62,8 +60,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f97316' },
-    { media: '(prefers-color-scheme: dark)', color: '#ea580c' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F9FC' },
+    { media: '(prefers-color-scheme: dark)', color: '#0E172A' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -79,9 +77,9 @@ export default function RootLayout({
     <html 
       lang="en" 
       suppressHydrationWarning 
-      className={`${outfit.variable} ${plusJakarta.variable}`}
+      className={plusJakarta.variable}
     >
-      <body className="min-h-screen bg-slate-50 font-sans antialiased">
+      <body className="min-h-screen bg-background-light dark:bg-background-dark font-sans antialiased">
         <Providers>
           {children}
           <Toaster
@@ -89,22 +87,24 @@ export default function RootLayout({
             toastOptions={{
               className: 'font-sans',
               style: {
-                borderRadius: '12px',
-                background: '#1e293b',
-                color: '#f8fafc',
-                padding: '16px',
+                borderRadius: '18px',
+                background: '#0E172A',
+                color: '#F8FAFC',
+                padding: '16px 20px',
                 fontFamily: 'var(--font-plus-jakarta), system-ui, sans-serif',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
               },
               success: {
                 iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#f8fafc',
+                  primary: '#22C55E',
+                  secondary: '#F8FAFC',
                 },
               },
               error: {
                 iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#f8fafc',
+                  primary: '#EF4444',
+                  secondary: '#F8FAFC',
                 },
               },
             }}

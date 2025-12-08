@@ -22,6 +22,20 @@ export class SosEscalationService {
     this.level2Timeout = this.configService.get('SOS_ESCALATION_LEVEL2_SECONDS', 60) * 1000;
   }
 
+  async scheduleAutoActivation(alertId: string, countdownSeconds: number): Promise<void> {
+    await this.escalationQueue.add(
+      'auto-activate',
+      { alertId },
+      {
+        delay: countdownSeconds * 1000,
+        removeOnComplete: true,
+        removeOnFail: false,
+      },
+    );
+
+    this.logger.log(`Scheduled auto-activation for SOS ${alertId} in ${countdownSeconds}s`);
+  }
+
   async scheduleVerificationCheck(alertId: string): Promise<void> {
     await this.escalationQueue.add(
       'verification-timeout',
@@ -72,6 +86,37 @@ export class SosEscalationService {
     }
 
     this.logger.log(`Cancelled escalation for SOS ${alertId}`);
+  }
+
+  async processAutoActivation(alertId: string): Promise<void> {
+    const alert = await this.prisma.sOSAlert.findUnique({
+      where: { id: alertId },
+    });
+
+    if (!alert || alert.status !== SOSStatus.PENDING) {
+      return; // Already processed or cancelled
+    }
+
+    // Create fuzzy location for responders
+    const offsetMeters = 100 + Math.random() * 200;
+    const angle = Math.random() * 2 * Math.PI;
+    const offsetLat = (offsetMeters * Math.cos(angle)) / 111320;
+    const offsetLon = (offsetMeters * Math.sin(angle)) / (111320 * Math.cos((alert.latitude * Math.PI) / 180));
+
+    // Auto-activate the SOS
+    await this.prisma.sOSAlert.update({
+      where: { id: alertId },
+      data: {
+        status: SOSStatus.ACTIVE,
+        activatedAt: new Date(),
+        approxLatitude: alert.latitude + offsetLat,
+        approxLongitude: alert.longitude + offsetLon,
+      },
+    });
+
+    this.logger.warn(`SOS ${alertId} auto-activated after countdown`);
+
+    // Note: Broadcast should be triggered from SOS service
   }
 
   async processVerificationTimeout(alertId: string): Promise<void> {

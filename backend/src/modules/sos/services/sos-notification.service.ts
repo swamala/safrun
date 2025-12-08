@@ -187,6 +187,59 @@ export class SosNotificationService {
     );
   }
 
+  async notifySOSCancelled(alertId: string): Promise<void> {
+    const alert = await this.prisma.sOSAlert.findUnique({
+      where: { id: alertId },
+      include: {
+        user: { select: { profile: { select: { displayName: true } } } },
+        responders: true,
+      },
+    });
+
+    if (!alert) return;
+
+    // Notify all responders that SOS was cancelled
+    for (const responder of alert.responders) {
+      await this.redisService.publish(
+        'sos:update',
+        JSON.stringify({
+          type: 'SOS_CANCELLED',
+          userId: responder.responderId,
+          alertId,
+          userName: alert.user.profile?.displayName || 'The runner',
+        }),
+      );
+    }
+
+    this.logger.log(`SOS cancelled notification sent for ${alertId}`);
+  }
+
+  async notifyUserResponderUpdate(
+    userId: string,
+    alertId: string,
+    responderId: string,
+    distance: number,
+    estimatedETA: number,
+  ): Promise<void> {
+    const responder = await this.prisma.user.findUnique({
+      where: { id: responderId },
+      select: { profile: { select: { displayName: true } } },
+    });
+
+    await this.redisService.publish(
+      'sos:update',
+      JSON.stringify({
+        type: 'SOS_RESPONDER_UPDATE',
+        userId,
+        alertId,
+        responderId,
+        responderName: responder?.profile?.displayName || 'A nearby runner',
+        distance,
+        estimatedETA,
+      }),
+    );
+  }
+
   async notifySOSResolved(alertId: string): Promise<void> {
     const alert = await this.prisma.sOSAlert.findUnique({
       where: { id: alertId },

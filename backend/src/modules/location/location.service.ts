@@ -38,6 +38,7 @@ export class LocationService {
     userId: string,
     dto: LocationUpdateDto,
     sessionId?: string,
+    soloRunId?: string,
   ): Promise<LocationResponseDto> {
     // Validate location data
     const validation = await this.validationService.validateLocation(userId, dto);
@@ -204,6 +205,20 @@ export class LocationService {
 
   async clearLocationHistory(userId: string, sessionId?: string): Promise<void> {
     await this.historyService.clearHistory(userId, sessionId);
+  }
+
+  async stopTracking(
+    userId: string,
+    sessionId?: string,
+    soloRunId?: string,
+  ): Promise<void> {
+    // Remove from geo index
+    await this.geoService.removeRunner(userId, sessionId);
+
+    // Clear location cache
+    await this.redisService.del(`location:latest:${userId}`);
+
+    this.logger.log(`Stopped tracking for user ${userId}`);
   }
 
   private async cacheLatestLocation(

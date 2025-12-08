@@ -178,6 +178,21 @@ export class ProfileService {
     });
   }
 
+  async updateAvatar(
+    userId: string,
+    avatarUrl: string,
+    thumbnailUrl?: string,
+  ): Promise<void> {
+    await this.prisma.profile.update({
+      where: { userId },
+      data: {
+        avatarUrl,
+        avatarThumbnailUrl: thumbnailUrl,
+      },
+    });
+    this.logger.log(`Avatar updated for user ${userId}`);
+  }
+
   async getPublicProfile(userId: string): Promise<Partial<ProfileResponseDto> | null> {
     const profile = await this.prisma.profile.findUnique({
       where: { userId },

@@ -129,5 +129,70 @@ export class EncryptionService {
     );
     return signature === expectedSignature;
   }
+
+  /**
+   * Encrypt phone number for storage
+   */
+  encryptPhoneNumber(phone: string): string {
+    return this.encrypt(phone);
+  }
+
+  /**
+   * Decrypt phone number for use
+   */
+  decryptPhoneNumber(encryptedPhone: string): string {
+    try {
+      return this.decrypt(encryptedPhone);
+    } catch (error) {
+      this.logger.error(`Failed to decrypt phone number: ${error.message}`);
+      return encryptedPhone; // Return as-is if decryption fails (might be unencrypted)
+    }
+  }
+
+  /**
+   * Encrypt emergency contact data
+   */
+  encryptEmergencyContact(contact: {
+    name: string;
+    phone: string;
+    email?: string;
+  }): { name: string; phone: string; email?: string } {
+    return {
+      name: contact.name, // Keep name readable for UI
+      phone: this.encrypt(contact.phone),
+      email: contact.email ? this.encrypt(contact.email) : undefined,
+    };
+  }
+
+  /**
+   * Decrypt emergency contact data
+   */
+  decryptEmergencyContact(contact: {
+    name: string;
+    phone: string;
+    email?: string;
+  }): { name: string; phone: string; email?: string } {
+    try {
+      return {
+        name: contact.name,
+        phone: this.decrypt(contact.phone),
+        email: contact.email ? this.decrypt(contact.email) : undefined,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to decrypt emergency contact: ${error.message}`);
+      return contact; // Return as-is if decryption fails
+    }
+  }
+
+  /**
+   * Mask phone number for display (e.g., +1234***7890)
+   */
+  maskPhoneNumber(phone: string): string {
+    if (phone.length < 6) return '***';
+    const start = phone.slice(0, 4);
+    const end = phone.slice(-4);
+    const middle = '*'.repeat(phone.length - 8);
+    return `${start}${middle}${end}`;
+  }
 }
 

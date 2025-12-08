@@ -16,6 +16,7 @@ import { LocationModule } from './modules/location/location.module';
 import { SosModule } from './modules/sos/sos.module';
 import { NearbyModule } from './modules/nearby/nearby.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { FeedModule } from './modules/feed/feed.module';
 
 // WebSocket gateway
 import { EventsModule } from './gateway/events.module';
@@ -74,6 +75,7 @@ import { SharedModule } from './shared/shared.module';
     SosModule,
     NearbyModule,
     NotificationModule,
+    FeedModule,
 
     // WebSocket gateway
     EventsModule,

@@ -6,36 +6,43 @@ import { cn } from '@/lib/utils';
 
 /**
  * SAFRUN Input Component
- * Premium, modern input field with consistent styling
+ * Premium inputs with 14-16px font, soft borders, subtle shadows
+ * Border radius: 18px per design spec
  */
 const inputVariants = cva(
   // Base styles
   [
-    'w-full rounded-xl transition-all duration-200',
+    'w-full transition-all duration-200',
     'bg-white dark:bg-white/5',
-    'border border-slate-200 dark:border-white/10',
-    'text-slate-900 dark:text-white',
-    'placeholder:text-slate-400 dark:placeholder:text-slate-500',
-    'focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:focus:ring-orange-400/30',
-    'focus:border-orange-500/50 dark:focus:border-orange-400/50',
+    'border border-navy-200/60 dark:border-white/10',
+    'text-text-light-heading dark:text-text-dark-heading',
+    'placeholder:text-text-light-body/50 dark:placeholder:text-text-dark-body/50',
+    'focus:outline-none focus:ring-2 focus:ring-safrun-500/20 dark:focus:ring-safrun-400/25',
+    'focus:border-safrun-500/50 dark:focus:border-safrun-400/50',
     'disabled:opacity-50 disabled:cursor-not-allowed',
-    'font-sans',
+    'font-sans text-[15px]',
+    'shadow-soft-xs dark:shadow-none',
+    'rounded-[18px]',  // 18px radius per spec
   ],
   {
     variants: {
       inputSize: {
-        sm: 'h-10 px-3 text-sm',
-        md: 'h-12 px-4 text-base',
-        lg: 'h-14 px-5 text-lg',
+        sm: 'h-10 px-4 text-sm',
+        md: 'h-12 px-4',
+        lg: 'h-14 px-5 text-base',
       },
       hasError: {
-        true: 'border-red-500 dark:border-red-400 focus:ring-red-500/30 dark:focus:ring-red-400/30 focus:border-red-500 dark:focus:border-red-400',
+        true: [
+          'border-danger-500 dark:border-danger-400',
+          'focus:ring-danger-500/20 dark:focus:ring-danger-400/25',
+          'focus:border-danger-500 dark:focus:border-danger-400',
+        ],
         false: '',
       },
       hasIcon: {
-        left: 'pl-11',
-        right: 'pr-11',
-        both: 'pl-11 pr-11',
+        left: 'pl-12',
+        right: 'pr-12',
+        both: 'pl-12 pr-12',
         none: '',
       },
     },
@@ -83,14 +90,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-text-light-heading dark:text-text-dark-body"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light-body/60 dark:text-text-dark-body/60 pointer-events-none">
               {leftIcon}
             </div>
           )}
@@ -108,16 +115,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-text-light-body/60 dark:text-text-dark-body/60">
               {rightIcon}
             </div>
           )}
         </div>
         {error && (
-          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+          <p className="text-sm text-danger-500 dark:text-danger-400">{error}</p>
         )}
         {hint && !error && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">{hint}</p>
+          <p className="text-sm text-text-light-body dark:text-text-dark-body">{hint}</p>
         )}
       </div>
     );
@@ -133,20 +140,25 @@ export { inputVariants };
  */
 const textareaVariants = cva(
   [
-    'w-full rounded-xl transition-all duration-200 resize-none',
+    'w-full transition-all duration-200 resize-none',
     'bg-white dark:bg-white/5',
-    'border border-slate-200 dark:border-white/10',
-    'text-slate-900 dark:text-white',
-    'placeholder:text-slate-400 dark:placeholder:text-slate-500',
-    'focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:focus:ring-orange-400/30',
-    'focus:border-orange-500/50 dark:focus:border-orange-400/50',
+    'border border-navy-200/60 dark:border-white/10',
+    'text-text-light-heading dark:text-text-dark-heading',
+    'placeholder:text-text-light-body/50 dark:placeholder:text-text-dark-body/50',
+    'focus:outline-none focus:ring-2 focus:ring-safrun-500/20 dark:focus:ring-safrun-400/25',
+    'focus:border-safrun-500/50 dark:focus:border-safrun-400/50',
     'disabled:opacity-50 disabled:cursor-not-allowed',
-    'font-sans p-4',
+    'font-sans text-[15px] p-4',
+    'shadow-soft-xs dark:shadow-none',
+    'rounded-[18px]',
   ],
   {
     variants: {
       hasError: {
-        true: 'border-red-500 dark:border-red-400',
+        true: [
+          'border-danger-500 dark:border-danger-400',
+          'focus:ring-danger-500/20 dark:focus:ring-danger-400/25',
+        ],
         false: '',
       },
     },
@@ -173,7 +185,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            className="block text-sm font-medium text-text-light-heading dark:text-text-dark-body"
           >
             {label}
           </label>
@@ -185,10 +197,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+          <p className="text-sm text-danger-500 dark:text-danger-400">{error}</p>
         )}
         {hint && !error && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">{hint}</p>
+          <p className="text-sm text-text-light-body dark:text-text-dark-body">{hint}</p>
         )}
       </div>
     );
@@ -197,3 +209,43 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
 Textarea.displayName = 'Textarea';
 
+/**
+ * Search Input with built-in search icon
+ */
+interface SearchInputProps extends Omit<InputProps, 'leftIcon'> {
+  onSearch?: (value: string) => void;
+}
+
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
+  ({ onSearch, ...props }, ref) => {
+    return (
+      <Input
+        ref={ref}
+        type="search"
+        leftIcon={
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        }
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && onSearch) {
+            onSearch((e.target as HTMLInputElement).value);
+          }
+        }}
+        {...props}
+      />
+    );
+  }
+);
+
+SearchInput.displayName = 'SearchInput';

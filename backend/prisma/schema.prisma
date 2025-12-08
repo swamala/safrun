@@ -66,12 +66,14 @@ enum SOSTriggerType {
 }
 
 enum SOSStatus {
+  PENDING
   PENDING_VERIFICATION
   ACTIVE
   ACKNOWLEDGED
   RESOLVED
   FALSE_ALARM
   ESCALATED
+  CANCELLED
 }
 
 enum SOSEscalationLevel {
@@ -102,6 +104,24 @@ enum AuditAction {
   SESSION_LEAVE
 }
 
+enum FeedItemType {
+  RUN_STARTED
+  RUN_COMPLETED
+  SOS_TRIGGERED
+  SOS_RESOLVED
+  RESPONDER_JOINED
+  SESSION_JOINED
+  SESSION_CREATED
+  MILESTONE_REACHED
+}
+
+enum RunnerStatus {
+  IDLE
+  RUNNING
+  IN_SESSION
+  SOS_ACTIVE
+}
+
 // ===========================================
 // MODELS
 // ===========================================
@@ -130,6 +150,8 @@ model User {
   sosResponses      SOSResponder[]
   auditLogs         AuditLog[]
   refreshTokens     RefreshToken[]
+  feedItems         FeedItem[]
+  soloRuns          SoloRun[]
 
   @@index([email])
   @@index([phone])
@@ -141,6 +163,7 @@ model Profile {
   userId                String   @unique
   displayName           String
   avatarUrl             String?
+  avatarThumbnailUrl    String?
   bio                   String?
   
   // Running Stats
@@ -148,6 +171,11 @@ model Profile {
   totalRuns             Int      @default(0)
   totalDuration         Int      @default(0) // in seconds
   averagePace           Float?
+  longestRun            Float    @default(0) // meters
+  fastestPace           Float?   // min/km
+  currentStreak         Int      @default(0) // days
+  longestStreak         Int      @default(0) // days
+  lastRunAt             DateTime?
   
   // Safety Settings
   autoSOSEnabled        Boolean  @default(false)
@@ -162,6 +190,10 @@ model Profile {
   profileVisibility     String   @default("PUBLIC") // PUBLIC, FRIENDS, PRIVATE
   showOnNearbyRadar     Boolean  @default(true)
   allowGroupInvites     Boolean  @default(true)
+  
+  // SOS Stats
+  sosTriggered          Int      @default(0)
+  sosResponded          Int      @default(0)
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -178,7 +210,11 @@ model Device {
   deviceType      DeviceType
   deviceId        String     // Unique device identifier
   deviceName      String?
-  pushToken       String?
+  deviceModel     String?    // e.g., "iPhone 15 Pro", "Pixel 8"
+  osVersion       String?    // e.g., "iOS 17.2", "Android 14"
+  appVersion      String?    // e.g., "1.0.0"
+  pushToken       String?    // Expo push token
+  voipToken       String?    // VoIP push token for calls
   fingerprint     String?    // For anomaly detection
   ipAddress       String?
   userAgent       String?
@@ -193,6 +229,7 @@ model Device {
   @@unique([userId, deviceId])
   @@index([deviceId])
   @@index([userId])
+  @@index([pushToken])
 }
 
 model RefreshToken {
@@ -225,8 +262,11 @@ model RunSession {
   // Route Info
   startLatitude     Float?
   startLongitude    Float?
+  endLatitude       Float?
+  endLongitude      Float?
   plannedDistance   Float?            // in meters
   actualDistance    Float?
+  routePolyline     String?           // Encoded polyline for route replay
   
   // Settings
   maxParticipants   Int               @default(50)
@@ -244,6 +284,41 @@ model RunSession {
   @@index([creatorId])
   @@index([status])
   @@index([scheduledStartAt])
+  @@index([startLatitude, startLongitude])
+}
+
+model SoloRun {
+  id              String   @id @default(uuid())
+  userId          String
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  isPaused        Boolean  @default(false)
+  pausedAt        DateTime?
+  
+  // Route Info
+  startLatitude   Float?
+  startLongitude  Float?
+  endLatitude     Float?
+  endLongitude    Float?
+  routePolyline   String?  // Encoded polyline for route replay
+  
+  // Stats
+  distance        Float    @default(0) // meters
+  duration        Int      @default(0) // seconds (active time)
+  pausedDuration  Int      @default(0) // seconds
+  averagePace     Float?   // min/km
+  maxSpeed        Float?   // m/s
+  calories        Float?
+  elevationGain   Float?   // meters
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([startedAt])
 }
 
 model RunParticipant {
@@ -260,6 +335,7 @@ model RunParticipant {
   duration        Int               @default(0) // seconds
   averagePace     Float?
   maxSpeed        Float?
+  calories        Float?
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -277,6 +353,7 @@ model LiveLocation {
   id              String      @id @default(uuid())
   userId          String
   sessionId       String?
+  soloRunId       String?
   
   // Location Data
   latitude        Float
@@ -286,10 +363,16 @@ model LiveLocation {
   speed           Float?      // m/s
   heading         Float?      // degrees
   
+  // Smoothed values (for anti-jitter)
+  smoothedLat     Float?
+  smoothedLng     Float?
+  smoothedSpeed   Float?
+  
   // Validation
   timestamp       DateTime    @default(now())
   isEncrypted     Boolean     @default(false)
   signatureHash   String?     // HMAC signature for verification
+  isSpoofed       Boolean     @default(false)
   
   // Metadata
   batteryLevel    Float?
@@ -304,6 +387,7 @@ model LiveLocation {
 
   @@index([userId, timestamp])
   @@index([sessionId])
+  @@index([soloRunId])
   @@index([latitude, longitude])
   @@index([timestamp])
 }
@@ -312,7 +396,7 @@ model SOSAlert {
   id                  String            @id @default(uuid())
   userId              String
   triggerType         SOSTriggerType
-  status              SOSStatus         @default(PENDING_VERIFICATION)
+  status              SOSStatus         @default(PENDING)
   escalationLevel     SOSEscalationLevel @default(LEVEL_1)
   
   // Location at trigger
@@ -325,11 +409,17 @@ model SOSAlert {
   approxLatitude      Float?
   approxLongitude     Float?
   
+  // Countdown (pending state)
+  countdownStartedAt  DateTime?
+  countdownSeconds    Int               @default(5)
+  
   // Timestamps
   triggeredAt         DateTime          @default(now())
+  activatedAt         DateTime?         // When countdown completes
   verificationSentAt  DateTime?
   acknowledgedAt      DateTime?
   resolvedAt          DateTime?
+  cancelledAt         DateTime?
   
   // Audio/Video
   audioRecordingUrl   String?
@@ -364,8 +454,11 @@ model SOSResponder {
   arrivedAt       DateTime?
   declinedAt      DateTime?
   
-  // Distance when notified
+  // ETA calculation
   distanceMeters  Float?
+  estimatedETA    Int?            // seconds
+  lastLatitude    Float?
+  lastLongitude   Float?
   
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -410,6 +503,34 @@ model EmergencyContact {
   @@index([phone])
 }
 
+model FeedItem {
+  id          String       @id @default(uuid())
+  userId      String
+  type        FeedItemType
+  
+  // Related entities
+  sessionId   String?
+  soloRunId   String?
+  sosAlertId  String?
+  targetUserId String?     // For responder/join events
+  
+  // Metadata
+  metadata    Json?        // Flexible JSON for type-specific data
+  
+  // Visibility
+  isPublic    Boolean      @default(true)
+  
+  createdAt   DateTime     @default(now())
+  
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
 model AuditLog {
   id          String      @id @default(uuid())
   userId      String?
@@ -430,3 +551,53 @@ model AuditLog {
   @@index([createdAt])
 }
 
+// ===========================================
+// STATISTICS CACHING (for fast queries)
+// ===========================================
+
+model WeeklyStats {
+  id            String   @id @default(uuid())
+  userId        String
+  weekStart     DateTime // Start of week (Monday)
+  
+  totalDistance Float    @default(0)
+  totalDuration Int      @default(0)
+  totalRuns     Int      @default(0)
+  avgPace       Float?
+  calories      Float    @default(0)
+  
+  sosTriggered  Int      @default(0)
+  sosResponded  Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@index([weekStart])
+}
+
+model MonthlyStats {
+  id            String   @id @default(uuid())
+  userId        String
+  monthStart    DateTime // Start of month (1st)
+  
+  totalDistance Float    @default(0)
+  totalDuration Int      @default(0)
+  totalRuns     Int      @default(0)
+  avgPace       Float?
+  calories      Float    @default(0)
+  
+  sosTriggered  Int      @default(0)
+  sosResponded  Int      @default(0)
+  
+  longestRun    Float    @default(0)
+  fastestPace   Float?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, monthStart])
+  @@index([userId])
+  @@index([monthStart])
+}

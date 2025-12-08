@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventsGateway } from './events.gateway';
+import { PresenceService } from './services/presence.service';
 import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
@@ -15,8 +16,8 @@ import { AuthModule } from '@/modules/auth/auth.module';
       inject: [ConfigService],
     }),
   ],
-  providers: [EventsGateway],
-  exports: [EventsGateway],
+  providers: [EventsGateway, PresenceService],
+  exports: [EventsGateway, PresenceService],
 })
 export class EventsModule {}
 

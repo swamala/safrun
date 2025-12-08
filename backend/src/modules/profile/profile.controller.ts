@@ -2,14 +2,19 @@ import {
   Controller,
   Get,
   Put,
+  Post,
   Patch,
   Body,
   Param,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { EmergencyContactService } from './services/emergency-contact.service';
+import { FileUploadService, UploadedFile as UploadFileType } from './services/file-upload.service';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import {
@@ -30,6 +35,7 @@ export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly emergencyContactService: EmergencyContactService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   @Get()
@@ -53,6 +59,47 @@ export class ProfileController {
     @Body() dto: UpdateProfileDto,
   ): Promise<ProfileResponseDto> {
     return this.profileService.updateProfile(userId, dto);
+  }
+
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiOperation({ summary: 'Upload avatar image' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file (JPEG, PNG, WebP, GIF - max 5MB)',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Avatar uploaded successfully' })
+  async uploadAvatar(
+    @CurrentUser('id') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ avatarUrl: string; thumbnailUrl: string }> {
+    const uploadedFile: UploadFileType = {
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      buffer: file.buffer,
+      size: file.size,
+    };
+
+    const result = await this.fileUploadService.uploadAvatar(userId, uploadedFile);
+
+    // Update profile with new avatar URL
+    await this.profileService.updateAvatar(userId, result.url, result.thumbnailUrl);
+
+    return {
+      avatarUrl: result.url,
+      thumbnailUrl: result.thumbnailUrl || result.url,
+    };
   }
 
   @Patch('safety')
@@ -115,4 +162,3 @@ export class ProfileController {
     await this.emergencyContactService.deleteContact(userId, contactId);
   }
 }
-

@@ -17,6 +17,7 @@ import {
   RefreshTokenDto,
   AuthResponseDto,
   DeviceInfoDto,
+  SessionResponseDto,
 } from './dto/auth.dto';
 
 @Injectable()
@@ -230,6 +231,53 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async getSession(userId: string, deviceId: string): Promise<SessionResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        profile: true,
+        devices: {
+          where: { isActive: true },
+          orderBy: { lastActiveAt: 'desc' },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const currentDevice = user.devices.find((d) => d.deviceId === deviceId);
+    if (!currentDevice) {
+      throw new UnauthorizedException('Device not found');
+    }
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+        displayName: user.profile?.displayName || '',
+        avatarUrl: user.profile?.avatarUrl,
+      },
+      currentDevice: {
+        id: currentDevice.id,
+        deviceType: currentDevice.deviceType,
+        deviceName: currentDevice.deviceName,
+        deviceModel: currentDevice.deviceModel,
+        osVersion: currentDevice.osVersion,
+        isActive: currentDevice.isActive,
+        lastActiveAt: currentDevice.lastActiveAt,
+        createdAt: currentDevice.createdAt,
+        isCurrent: true,
+      },
+      activeDevices: user.devices.length,
+      maxDevices: 5,
+      sessionCreatedAt: currentDevice.createdAt,
+      lastActivity: currentDevice.lastActiveAt,
+    };
   }
 }
 
