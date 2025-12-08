@@ -36,7 +36,7 @@ const RunnerMap = dynamic(() => import('@/components/map/RunnerMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[500px] bg-slate-200 dark:bg-slate-800/50 rounded-3xl animate-pulse flex items-center justify-center border border-slate-200 dark:border-slate-700/50">
-      <span className="text-slate-500 dark:text-slate-400">Loading map...</span>
+      <span className="text-slate-600 dark:text-slate-400">Loading map...</span>
     </div>
   ),
 });
@@ -216,10 +216,10 @@ function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonia
           <p className="font-semibold text-slate-900 dark:text-white">
             {testimonial.author}
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {testimonial.role}
           </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-500 mt-0.5">
             {testimonial.location}
           </p>
         </div>
@@ -303,7 +303,7 @@ function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonia
 
       {/* Desktop: View More Link */}
       <div className="hidden lg:flex justify-center mt-12">
-        <button className="group flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
+        <button className="group flex items-center gap-2 text-slate-700 dark:text-slate-400 hover:text-orange-500 transition-colors">
           <span className="font-medium">Read more stories</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
@@ -362,7 +362,7 @@ export default function LandingPage() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-all duration-200"
+                  className="px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-all duration-200"
                 >
                   {link.label}
                 </a>
@@ -374,7 +374,7 @@ export default function LandingPage() {
               {/* Theme toggle */}
               <button
                 onClick={() => setIsDark(!isDark)}
-                className="p-3 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/[0.08] border border-slate-200/50 dark:border-white/[0.06] transition-all duration-200"
+                className="p-3 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/[0.08] border border-slate-200/50 dark:border-white/[0.06] transition-all duration-200"
                 aria-label="Toggle theme"
               >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -383,7 +383,7 @@ export default function LandingPage() {
               {/* Sign In */}
               <Link
                 href="/auth/signin"
-                className="hidden sm:flex items-center px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="hidden sm:flex items-center px-5 py-2.5 text-sm font-medium text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 Sign In
               </Link>
@@ -404,7 +404,7 @@ export default function LandingPage() {
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-3 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-white/[0.06]"
+                className="md:hidden p-3 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-400 border border-slate-200/50 dark:border-white/[0.06]"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -526,7 +526,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12 leading-[1.7]"
+              className="text-lg sm:text-xl text-slate-700 dark:text-slate-400 max-w-2xl mx-auto mb-12 leading-[1.7]"
             >
               Join group runs, track live locations, and stay protected with emergency SOS alerts 
               that broadcast to nearby runners and your guardians.
@@ -581,11 +581,11 @@ export default function LandingPage() {
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
                 ))}
-                <span className="ml-3 text-sm font-medium text-slate-600 dark:text-slate-400">
+                <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-400">
                   4.9/5 from 10,000+ reviews
                 </span>
               </div>
-              <div className="flex items-center gap-6 text-slate-400 dark:text-slate-500 text-sm">
+              <div className="flex items-center gap-6 text-slate-600 dark:text-slate-500 text-sm">
                 <span>App Store</span>
                 <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
                 <span>Google Play</span>
@@ -625,7 +625,7 @@ export default function LandingPage() {
                         <p className="font-semibold text-slate-900 dark:text-white">Sarah's Morning Run</p>
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                          <span className="text-sm text-slate-500 dark:text-slate-400">Live • 4 runners</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-400">Live • 4 runners</span>
                         </div>
                       </div>
                     </div>
@@ -674,7 +674,7 @@ export default function LandingPage() {
                         }}
                       >
                         <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{stat.label}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{stat.label}</p>
                       </div>
                     ))}
                   </div>
@@ -717,7 +717,7 @@ export default function LandingPage() {
                 >
                   {stat.value}
                 </p>
-                <p className="mt-2 text-slate-600 dark:text-slate-400 font-medium">
+                <p className="mt-2 text-slate-700 dark:text-slate-400 font-medium">
                   {stat.label}
                 </p>
               </motion.div>
@@ -750,7 +750,7 @@ export default function LandingPage() {
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6 tracking-[-0.02em]">
               Your Safety, Our Priority
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-[1.7]">
+            <p className="text-lg text-slate-700 dark:text-slate-400 max-w-2xl mx-auto leading-[1.7]">
               Comprehensive safety features designed by runners, for runners. 
               Stay connected, stay protected.
             </p>
@@ -780,7 +780,7 @@ export default function LandingPage() {
                 <h3 className="font-display text-xl font-semibold text-slate-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-[1.7]">
+                <p className="text-slate-700 dark:text-slate-400 leading-[1.7]">
                   {feature.description}
                 </p>
               </motion.div>
@@ -822,7 +822,7 @@ export default function LandingPage() {
                   Community Live
                 </span>
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-[1.7]">
+              <p className="text-lg text-slate-700 dark:text-slate-400 mb-8 leading-[1.7]">
                 Watch runners in real-time on our interactive map. Connect with 
                 nearby runners, join group runs, and always know help is close by.
               </p>
@@ -838,7 +838,7 @@ export default function LandingPage() {
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
                       <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
                     </div>
-                    <span className="text-slate-700 dark:text-slate-300">{item}</span>
+                    <span className="text-slate-800 dark:text-slate-300">{item}</span>
                   </div>
                 ))}
               </div>
@@ -933,7 +933,7 @@ export default function LandingPage() {
                   <div className="text-center">
                     <Bell className="w-12 h-12 text-red-500 mx-auto mb-2" />
                     <span className="text-2xl font-bold text-red-500">SOS</span>
-                    <p className="text-xs text-slate-500 mt-1">Hold to activate</p>
+                    <p className="text-xs text-slate-600 mt-1">Hold to activate</p>
                   </div>
                 </div>
               </div>
@@ -952,7 +952,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-slate-900 text-sm">SOS Alert Received</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Sarah needs help • 0.3km away</p>
+                    <p className="text-xs text-slate-600 mt-0.5">Sarah needs help • 0.3km away</p>
                     <button className="mt-2 text-xs font-medium text-red-500">
                       View Location →
                     </button>
@@ -997,7 +997,7 @@ export default function LandingPage() {
                 Worldwide
               </span>
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-[1.7]">
+            <p className="text-lg text-slate-700 dark:text-slate-400 max-w-2xl mx-auto leading-[1.7]">
               Join thousands of runners who trust SAFRUN for their safety and community.
             </p>
           </motion.div>
@@ -1046,7 +1046,7 @@ export default function LandingPage() {
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                   </svg>
                   <div className="text-left">
-                    <p className="text-xs text-slate-500">Download on the</p>
+                    <p className="text-xs text-slate-600">Download on the</p>
                     <p className="font-semibold text-lg">App Store</p>
                   </div>
                 </button>
@@ -1056,13 +1056,13 @@ export default function LandingPage() {
                     <path d="M3 20.5v-17c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.24-.84-.76-.84-1.35zm13.81-5.38L6.05 21.34l8.49-8.49 2.27 2.27zm3.35-4.31c.34.27.59.69.59 1.19s-.22.9-.57 1.18l-2.29 1.32-2.5-2.5 2.5-2.5 2.27 1.31zM6.05 2.66l10.76 6.22-2.27 2.27-8.49-8.49z"/>
                   </svg>
                   <div className="text-left">
-                    <p className="text-xs text-slate-500">Get it on</p>
+                    <p className="text-xs text-slate-600">Get it on</p>
                     <p className="font-semibold text-lg">Google Play</p>
                   </div>
                 </button>
               </div>
 
-              <p className="mt-10 text-sm text-slate-500">
+              <p className="mt-10 text-sm text-slate-600">
                 Free to download • No credit card required
               </p>
             </div>
@@ -1087,7 +1087,7 @@ export default function LandingPage() {
               <div className="mb-6">
                 <Logo size="md" variant={isDark ? 'default' : 'dark'} />
               </div>
-              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-[1.7]">
+              <p className="text-slate-700 dark:text-slate-400 mb-6 leading-[1.7]">
                 The social running platform that puts your safety first. Run with confidence.
               </p>
               <div className="flex items-center gap-3">
@@ -1101,7 +1101,7 @@ export default function LandingPage() {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-orange-500 transition-all duration-200"
+                    className="p-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-all duration-200"
                     style={{
                       background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(241,245,249,0.8)',
                       border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.5)',
@@ -1119,7 +1119,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 {['Features', 'Safety', 'Pricing', 'Download', 'Changelog'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-slate-700 dark:text-slate-400 hover:text-orange-500 transition-colors">
                       {link}
                     </a>
                   </li>
@@ -1133,7 +1133,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 {['About Us', 'Careers', 'Blog', 'Press', 'Partners'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-slate-700 dark:text-slate-400 hover:text-orange-500 transition-colors">
                       {link}
                     </a>
                   </li>
@@ -1147,7 +1147,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'GDPR', 'Contact'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-slate-700 dark:text-slate-400 hover:text-orange-500 transition-colors">
                       {link}
                     </a>
                   </li>
@@ -1162,12 +1162,12 @@ export default function LandingPage() {
               borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(226,232,240,0.8)',
             }}
           >
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-600 dark:text-slate-500 text-sm">
               © {new Date().getFullYear()} SAFRUN. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               {['Privacy', 'Terms', 'Sitemap'].map((link) => (
-                <a key={link} href="#" className="text-sm text-slate-500 hover:text-orange-500 transition-colors">
+                <a key={link} href="#" className="text-sm text-slate-600 dark:text-slate-500 hover:text-orange-500 transition-colors">
                   {link}
                 </a>
               ))}
