@@ -2,9 +2,11 @@
 
 ## **Product Requirements Document (PRD)**
 
-Version 1.1 — Updated December 2024
+Version 1.2 — Updated December 2024
 
-> **New in v1.1**: Added Business Model, Revenue Projections, Market Positioning, Investor Talking Points (Sections 14-20)
+> **New in v1.2**: Added Lean Moat Engine (Section 21) — the defensibility layer that competitors cannot replicate
+> 
+> **v1.1**: Business Model, Revenue Projections, Market Positioning, Investor Talking Points (Sections 14-20)
 
 ---
 
@@ -411,34 +413,50 @@ Modules:
 
 ---
 
-# **11. Release Plan (MVP → V2 → V3)**
+# **11. Release Plan (MVP → V1.5 → V2 → V3)**
 
-## **MVP**
+## **MVP (✅ Complete)**
 
-* Manual SOS
-* Guardian alerts
-* Nearby runners broadcast
-* Live group map
-* Basic chat
+* Manual SOS with countdown verification
+* Guardian alerts with real-time tracking
+* Nearby runners broadcast (configurable radius)
+* Live group map with participants
+* Session chat
 * Anonymous mode
-* Simple tracking metrics
+* Run statistics
+* Location fuzzing (basic)
+
+## **V1.5 — Lean Moat Engine (🔄 Next: 2-3 weeks)**
+
+*The defensibility layer — see Section 21 for details*
+
+* Safety Memory Graph (event intelligence)
+* Responder Trust Score (behavioral ranking)
+* Location Fuzz → Converge (privacy-preserved routing)
+* Micro-Safety ML (fall detection, no-movement, snatch detection)
+* Risk Grid Tiles (danger zone intelligence)
+* SDK safety methods
+* Mobile sensor integration
 
 ## **V2**
 
-* AI safety detection
+* AI-enhanced safety detection
 * Anti-stalker engine
-* Danger zone mapping
-* Video streaming
-* Dead-man triggers
+* Danger zone heatmap UI
+* Video streaming (WebRTC)
+* Advanced dead-man triggers
+* Wearable integration (Apple Watch, Garmin)
+* Community danger reporting
 
 ## **V3**
 
-* Phantom mode
-* Route prediction
+* Phantom mode (virtual runners)
+* Route prediction & safety recommendations
 * Advanced gamification
-* Wearable integration
-* Community events
+* Community events & challenges
+* Insurance partnerships
 * Public meet-ups
+* Enterprise API
 
 ---
 
@@ -737,12 +755,17 @@ SAFRUN creates a **decentralized emergency response network** where every app us
 3. **"Privacy-first emergency response"** — Fuzzy location → precise only when help commits
 4. **"The Uber of emergency response for runners"** — Crowd-sourced, real-time, local
 
-## **19.5 Defensibility**
+## **19.5 Defensibility (Lean Moat Engine)**
 
 * **Network effects**: More users = more responders = more safety = more users
-* **Data moat**: Safety incident data, danger zone mapping
+* **Safety Memory Graph**: Years of real-world safety events competitors can't replicate
+* **Responder Trust Scores**: Per-city behavioral reliability data unique to us
+* **Tuned Algorithms**: Fuzz → Converge and Micro-ML thresholds take months to calibrate
+* **Risk Intelligence**: Geohash-based danger mapping improves daily with usage
 * **Trust barrier**: Competitors can't replicate trust built with users
 * **B2B relationships**: Corporate and insurance partnerships are sticky
+
+> **Key Insight**: Every day SAFRUN operates, the moat gets wider. Competitors starting fresh need 6-12 months just to match our data density.
 
 ---
 
@@ -757,5 +780,435 @@ SAFRUN creates a **decentralized emergency response network** where every app us
 
 ---
 
-*PRD Version 1.1 — Updated December 2024*
-*Added: Business Model, Revenue Projections, Market Positioning*
+---
+
+# **21. Lean Moat Engine — Defensibility Layer**
+
+*The intelligence layer that competitors cannot replicate.*
+
+## **21.1 Strategic Purpose**
+
+Create a lightweight intelligence engine that:
+- Strengthens user safety through learned patterns
+- Increases responder reliability via behavioral scoring
+- Privately maps risk over time (danger zones)
+- Automatically improves as more runners join
+- **Cannot be copied** by cloning frontend/backend alone
+
+> **CEO Insight**: This moat uses **behavior**, **history**, and **heuristics** — not heavy AI. Every day of operation makes SAFRUN harder to compete with.
+
+## **21.2 Moat Components Overview**
+
+| Component | Description | Build Time | Defensive Value | Status |
+|-----------|-------------|------------|-----------------|--------|
+| **Safety Memory Graph** | Append-only safety event intelligence | 3-5 days | 🔥🔥🔥🔥 | 🆕 New |
+| **Responder Trust Score** | Behavior-based reliability ranking | 1-2 days | 🔥🔥🔥 | 🔄 Enhance existing |
+| **Location Fuzz → Converge** | Privacy-preserved responder routing | 2 days | 🔥🔥🔥🔥 | 🔄 Enhance existing |
+| **Micro-Safety ML** | 3 tiny sensor-based anomaly detectors | 2-3 days | 🔥🔥🔥 | 🆕 New |
+| **Risk Grid Tiles** | Geohash-based danger heatmaps | 2 days | 🔥🔥🔥 | 🆕 New |
+
+**Total Build Time: 10-14 days**
+
+---
+
+## **21.3 Component 1: Safety Memory Graph**
+
+### What It Is
+A lightweight, append-only event log that turns user activity into **safety intelligence**.
+
+### Integration with Existing Code
+- **Hooks into**: Existing SOS flow, escalation service, responder service
+- **No duplication**: Extends current `AuditLog` pattern
+- **Storage**: New `SafetyEvent` table (~100 bytes per event)
+
+### Data Stored Per Event
+```
+event_id          UUID
+runner_id_hash    String (privacy: hashed, not raw ID)
+timestamp         DateTime
+location_grid     String (geohash, ~100m precision)
+event_type        Enum (SOS_TRIGGERED, FALL_DETECTED, NO_MOVEMENT, 
+                        RESPONDER_ACCEPTED, RESPONDER_ARRIVED, SOS_RESOLVED)
+response_time_ms  Int (null until resolved)
+risk_level        Int (1-3)
+metadata          JSONB (flexible)
+```
+
+### Intelligence Generated
+- "This road has 3 SOS events during early mornings"
+- "This area has slow responder times (avg 4.2 min)"
+- "Typical response time here is 2.1 minutes"
+- "Risk score for this geohash: 7/10"
+
+### Why It's a Moat
+A competitor copying our UI will have **zero**:
+- Safety event density
+- Timing patterns
+- Historical behavioral data
+- Risk heatmaps
+
+**This is our unreplicable intelligence graph.**
+
+---
+
+## **21.4 Component 2: Responder Trust Score**
+
+### What It Is
+A computed reliability score for responders based on real behavior.
+
+### Integration with Existing Code
+- **Hooks into**: Existing `SOSResponder` model (already tracks responses)
+- **Enhancement**: Add computed `trustScore` field
+- **No new table**: Extend existing `Profile` with responder metrics
+
+### Scoring Formula
+```
+trustScore = 
+  (total_responses × 3) +
+  (avg_response_speed_bonus × 2) +      // faster = higher
+  (positive_feedback × 2) +
+  (arrivals × 5) +                       // actually showed up
+  (false_alarm_penalty × -3) +
+  (declined_penalty × -1)
+```
+
+### Usage
+- Order responders by reliability (highest score first)
+- "Trusted Responder" badge for score > 50
+- Priority dispatch to top responders
+- Reduce false alarm noise
+
+### Why It's a Moat
+Our dataset of **human reliability is unique per city**.
+No competitor can replicate 90 days of behavioral data.
+
+---
+
+## **21.5 Component 3: Location Fuzz → Converge**
+
+### What It Is
+Enhanced privacy algorithm where fuzzed location **converges to precise** as responder approaches.
+
+### Integration with Existing Code
+- **Enhances**: Existing `fuzzLocation()` in `sos.service.ts`
+- **No duplication**: Same function, smarter algorithm
+- **WebSocket integration**: Already have `sos:precise-location` event
+
+### Algorithm
+```
+Phase 1 (Broadcast): 
+  - Fuzz by 100-200m random offset
+  - All notified responders see approximate location
+
+Phase 2 (Accepted):
+  - Responder accepts → fuzz reduced to 50m
+  - Direction vector maintained
+
+Phase 3 (En Route, <200m away):
+  - Fuzz reduced to 20m
+
+Phase 4 (Arrival, <50m away):
+  - Precise location revealed
+```
+
+### Why It's a Moat
+- Strong privacy posture (women's safety market)
+- Requires GPS math + privacy models + real-world tuning
+- Competitors underestimate the debugging time
+- **Months of tuning** to get right
+
+---
+
+## **21.6 Component 4: Micro-Safety ML**
+
+### What It Is
+Three minimal anomaly detectors using phone sensors. No AI/ML infrastructure needed.
+
+### Integration with Existing Code
+- **Mobile only**: Expo Sensors (accelerometer, location)
+- **Feeds into**: New `SafetyEvent` table
+- **Triggers**: Existing SOS flow via SDK
+
+### Heuristic 1: Fall Detection
+```javascript
+if (accelerometerSpike > FALL_THRESHOLD && 
+    speedDropsToZero && 
+    noMovementFor3Seconds) {
+  → FALL_DETECTED event
+  → Auto-trigger SOS countdown
+}
+```
+
+### Heuristic 2: No Movement Timeout
+```javascript
+if (distanceMoved < 5m && 
+    timeElapsed > userTimeout &&  // default 5 min
+    sessionActive) {
+  → NO_MOVEMENT_DETECTED event
+  → "Are you okay?" prompt
+}
+```
+
+### Heuristic 3: Snatch Speed Spike
+```javascript
+if (suddenSpeedSpike > 25km/h &&    // impossible running speed
+    previousSpeed < 15km/h &&
+    directionChangeAbrupt) {
+  → POSSIBLE_SNATCH event
+  → Auto-trigger SOS countdown
+}
+```
+
+### Why It's a Moat
+- Events feed Safety Memory → intelligence improves
+- Competitors start with zero calibrated thresholds
+- Real-world data tunes these over time
+
+---
+
+## **21.7 Component 5: Risk Grid Tiles**
+
+### What It Is
+Geohash-based risk scoring for map areas.
+
+### Integration with Existing Code
+- **Uses**: Existing Redis geo-indexing infrastructure
+- **Feeds from**: Safety Memory Graph
+- **Exposes**: New `/safety/grid/:geohash` endpoint
+
+### Risk Score Calculation
+```
+riskScore = (
+  (sos_events_count × 3) +
+  (slow_response_events × 2) +
+  (unresolved_events × 5) +
+  (time_of_day_factor) +           // night = higher
+  (recency_decay)                   // older events matter less
+) / normalization_factor
+```
+
+### Usage
+- Danger zone warnings in route planning
+- "This area has elevated risk" notifications
+- Heatmap overlay on map (V2)
+- Insurance data product (anonymized)
+
+---
+
+## **21.8 Data Schema Additions**
+
+### New Table: `SafetyEvent`
+```prisma
+model SafetyEvent {
+  id              String   @id @default(uuid())
+  runnerIdHash    String   // Hashed for privacy
+  eventType       SafetyEventType
+  timestamp       DateTime @default(now())
+  locationGrid    String   // Geohash (100m precision)
+  responseTimeMs  Int?
+  riskLevel       Int      @default(1) // 1-3
+  metadata        Json?
+  
+  @@index([locationGrid])
+  @@index([eventType])
+  @@index([timestamp])
+}
+
+enum SafetyEventType {
+  SOS_TRIGGERED
+  SOS_RESOLVED
+  SOS_CANCELLED
+  FALL_DETECTED
+  NO_MOVEMENT
+  SNATCH_DETECTED
+  RESPONDER_NOTIFIED
+  RESPONDER_ACCEPTED
+  RESPONDER_ARRIVED
+  RESPONDER_DECLINED
+}
+```
+
+### Extended: `Profile` (add responder metrics)
+```prisma
+// Add to existing Profile model:
+responderScore      Int      @default(0)
+totalResponses      Int      @default(0)
+totalArrivals       Int      @default(0)
+avgResponseTimeSec  Int?
+lastRespondedAt     DateTime?
+```
+
+### New Table: `RiskTile`
+```prisma
+model RiskTile {
+  id            String   @id @default(uuid())
+  geohash       String   @unique  // ~100m precision
+  riskScore     Float    @default(0)
+  eventCount    Int      @default(0)
+  avgResponseMs Int?
+  lastUpdated   DateTime @default(now())
+  
+  @@index([geohash])
+  @@index([riskScore])
+}
+```
+
+---
+
+## **21.9 SDK Additions**
+
+```typescript
+// New SDK methods (packages/sdk/src/safety.ts)
+class SafetyApi {
+  // Log safety event (called from mobile)
+  logEvent(event: SafetyEventInput): Promise<void>
+  
+  // Get risk score for a location
+  getRiskGrid(geohash: string): Promise<RiskTile>
+  
+  // Get risk tiles in radius
+  getRiskTilesNearby(lat: number, lng: number, radiusM: number): Promise<RiskTile[]>
+  
+  // Get responder score
+  getResponderScore(userId: string): Promise<ResponderScore>
+  
+  // Calculate fuzzed location (client-side preview)
+  fuzzLocation(lat: number, lng: number, phase: FuzzPhase): { lat: number, lng: number }
+}
+```
+
+---
+
+## **21.10 Backend Endpoints**
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/safety/event` | POST | Log safety event (internal/mobile) |
+| `/safety/grid/:geohash` | GET | Get risk score for tile |
+| `/safety/grid/nearby` | GET | Get risk tiles in radius |
+| `/safety/responder/:userId` | GET | Get responder metrics |
+| `/safety/responder/leaderboard` | GET | Top responders (optional) |
+
+---
+
+## **21.11 Mobile Integration**
+
+### New: Fall Detection Listener
+```typescript
+// hooks/useFallDetection.ts
+- Subscribe to Accelerometer
+- Detect spike + sudden stop pattern
+- Trigger SOS countdown if detected
+- Log SafetyEvent
+```
+
+### New: Movement Heartbeat
+```typescript
+// hooks/useMovementHeartbeat.ts
+- Track distance during session
+- Prompt if no movement > timeout
+- Auto-escalate if no response
+```
+
+### New: Snatch Detection
+```typescript
+// hooks/useSnatchDetection.ts
+- Monitor speed anomalies
+- Detect impossible acceleration
+- Trigger SOS countdown
+```
+
+### Settings UI Addition
+```
+Settings → Safety → Advanced
+  ├── Fall Detection: [ON/OFF]
+  ├── No Movement Timeout: [3/5/10 min]
+  ├── Snatch Detection: [ON/OFF]
+  └── Location Privacy Level: [Standard/Enhanced]
+```
+
+---
+
+## **21.12 Self-Reinforcing Moat Loop**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  (trigger) → Micro-ML detects anomaly                   │
+│       ↓                                                 │
+│  (SOS) → Location fuzz applied, broadcast sent          │
+│       ↓                                                 │
+│  (response) → Responders ranked by Trust Score          │
+│       ↓                                                 │
+│  (converge) → Location precision increases              │
+│       ↓                                                 │
+│  (resolution) → Safety Event logged to Memory Graph     │
+│       ↓                                                 │
+│  (learning) → Risk Grid updated, scores recalculated    │
+│       ↓                                                 │
+│  (improvement) → Better routing, faster response        │
+│       ↓                                                 │
+│  MOAT STRENGTHENS → Competitors fall further behind     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Every user improves the system. Every day widens the moat.**
+
+---
+
+## **21.13 What Competitors Can vs Cannot Copy**
+
+### ✅ They CAN Copy (Low Moat)
+- UI design
+- Map components
+- SOS button
+- Session management
+- Basic chat
+
+### ❌ They CANNOT Copy (High Moat)
+- Our **real-world safety events** (years of data)
+- Our **responder behavioral patterns** (per-city reliability)
+- Our **tuned fuzz → converge algorithm** (months of debugging)
+- Our **calibrated micro-ML thresholds** (real-world tuning)
+- Our **risk grid intelligence** (density + time patterns)
+- Our **incremental learning layer** (improves daily)
+
+---
+
+## **21.14 Implementation Priority**
+
+### Phase 1: Foundation (Week 1)
+1. ✅ SafetyEvent schema + migration
+2. ✅ Safety event logging from existing SOS flow
+3. ✅ Responder score calculation (extend Profile)
+4. ✅ `/safety/event` and `/safety/responder` endpoints
+
+### Phase 2: Intelligence (Week 2)
+1. ✅ Risk Grid tile calculation
+2. ✅ Fuzz → Converge algorithm enhancement
+3. ✅ Risk tile API endpoints
+4. ✅ SDK safety methods
+
+### Phase 3: Mobile Sensors (Week 2-3)
+1. ✅ Fall detection hook
+2. ✅ Movement heartbeat hook
+3. ✅ Snatch detection hook
+4. ✅ Settings UI for safety features
+
+---
+
+## **21.15 Success Metrics**
+
+| Metric | Target | Moat Effect |
+|--------|--------|-------------|
+| Safety events logged/day | 100+ | Data density |
+| Responder score accuracy | >80% correlation with actual arrivals | Trust reliability |
+| Risk tile coverage | >50% of active geohashes | Intelligence breadth |
+| False positive rate (ML) | <10% | User trust |
+| Avg time to converge | <2 min | Privacy + speed balance |
+
+---
+
+*PRD Version 1.2 — Updated December 2024*
+*Added: Lean Moat Engine (Section 21), Business Model, Revenue Projections, Market Positioning*
