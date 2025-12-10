@@ -19,7 +19,7 @@ export {
   ActionCard,
 } from './Card';
 
-export { Input, Textarea, SearchInput, inputVariants, textareaVariants } from './Input';
+export { Input, Textarea, SearchInput, inputVariants } from './Input';
 export type { InputProps, TextareaProps } from './Input';
 
 export { Badge, StatusBadge, CounterBadge, badgeVariants } from './Badge';

@@ -454,6 +454,246 @@ export function PlusIcon({ size = defaultSize, color = defaultColor }: IconProps
 }
 
 /**
+ * Crosshair/Target Icon
+ */
+export function CrosshairIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth={2} />
+      <Path
+        d="M22 12H18M6 12H2M12 6V2M12 22V18"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Layers Icon
+ */
+export function LayersIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 2L2 7L12 12L22 7L12 2Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M2 17L12 22L22 17"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M2 12L12 17L22 12"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Zoom In Icon
+ */
+export function ZoomInIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="11" cy="11" r="8" stroke={color} strokeWidth={2} />
+      <Path
+        d="M21 21L16.65 16.65M11 8V14M8 11H14"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Zoom Out Icon
+ */
+export function ZoomOutIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="11" cy="11" r="8" stroke={color} strokeWidth={2} />
+      <Path
+        d="M21 21L16.65 16.65M8 11H14"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Filter Icon
+ */
+export function FilterIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Chevron Up Icon
+ */
+export function ChevronUpIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M18 15L12 9L6 15"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Chevron Down Icon
+ */
+export function ChevronDownIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M6 9L12 15L18 9"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Navigation Icon
+ */
+export function NavigationIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M3 11L22 2L13 21L11 13L3 11Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Phone Icon
+ */
+export function PhoneIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M22 16.92V19.92C22 20.48 21.78 21.01 21.39 21.4C21 21.79 20.48 22 19.92 22C16.37 21.69 12.95 20.5 9.99 18.55C7.23 16.76 4.93 14.46 3.14 11.7C1.16 8.71 -0.02 5.26 0.28 1.69C0.3 1.14 0.52 0.62 0.91 0.24C1.3 -0.15 1.82 -0.36 2.37 -0.34H5.37C6.35 -0.35 7.18 0.36 7.35 1.33C7.51 2.51 7.82 3.67 8.26 4.77C8.53 5.44 8.38 6.2 7.88 6.72L6.59 8.01C8.23 10.93 10.65 13.35 13.57 14.99L14.86 13.7C15.38 13.2 16.14 13.05 16.81 13.32C17.91 13.76 19.07 14.07 20.25 14.23C21.24 14.41 21.96 15.27 21.94 16.27L22 16.92Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Clock Icon
+ */
+export function ClockIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth={2} />
+      <Path
+        d="M12 6V12L16 14"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Search Icon
+ */
+export function SearchIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="11" cy="11" r="8" stroke={color} strokeWidth={2} />
+      <Path
+        d="M21 21L16.65 16.65"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Message/Chat Icon
+ */
+export function MessageIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M21 15C21 15.53 20.79 16.04 20.41 16.41C20.04 16.79 19.53 17 19 17H7L3 21V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H19C19.53 3 20.04 3.21 20.41 3.59C20.79 3.96 21 4.47 21 5V15Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Send Icon
+ */
+export function SendIcon({ size = defaultSize, color = defaultColor }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
  * Running/Footprints Icon
  */
 export function FootprintsIcon({ size = defaultSize, color = defaultColor }: IconProps) {
@@ -482,6 +722,81 @@ export function FootprintsIcon({ size = defaultSize, color = defaultColor }: Ico
       />
       <Path
         d="M14.5 6V8C14.5 8.53 14.71 9.04 15.09 9.41C15.46 9.79 15.97 10 16.5 10H18C18.53 10 19.04 9.79 19.41 9.41C19.79 9.04 20 8.53 20 8V6C20 5.47 19.79 4.96 19.41 4.59C19.04 4.21 18.53 4 18 4H16.5C15.97 4 15.46 4.21 15.09 4.59C14.71 4.96 14.5 5.47 14.5 6Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+// Flame Icon
+export function FlameIcon({ size = 24, color = colors.safrun[500] }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 22C16 22 19 18.5 19 14C19 10.5 17 7 15 5C14.5 4.5 14 4 14 3C14 3 13.5 3.5 13 4C11 6 9 9 9 12C9 13.5 9 14 8 14.5C7 15 5 13.5 5 12C5 10.5 6 9 7 8C7 8 5 10 5 14C5 18.5 8 22 12 22Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+// Camera Icon
+export function CameraIcon({ size = 24, color = colors.navy[500] }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Circle cx="12" cy="13" r="4" stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
+// Check Circle Icon
+export function CheckCircleIcon({ size = 24, color = colors.safety[500] }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85782 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M22 4L12 14.01L9 11.01"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+// Edit Icon
+export function EditIcon({ size = 24, color = colors.navy[500] }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z"
         stroke={color}
         strokeWidth={2}
         strokeLinecap="round"

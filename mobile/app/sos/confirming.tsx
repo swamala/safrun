@@ -18,7 +18,7 @@ import { colors } from '@/theme/colors';
 import { spacing, borderRadius } from '@/theme/spacing';
 import { textStyles, fontWeight } from '@/theme/typography';
 import { Button } from '@/components';
-import { AlertTriangleIcon, XIcon } from '@/components/icons';
+import { AlertTriangleIcon, XIcon } from '@/components/Icons';
 import { useSOSStore } from '@/lib/store';
 import * as Location from 'expo-location';
 

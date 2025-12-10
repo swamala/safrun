@@ -250,7 +250,7 @@ export class PaceCalculationService {
     return Math.round(distance / currentSpeed); // seconds
   }
 
-  private calculateDistance(
+  public calculateDistance(
     lat1: number,
     lon1: number,
     lat2: number,

@@ -15,13 +15,19 @@
     "build": "npm run build --workspaces --if-present",
     "build:sdk": "npm run build --workspace=@safrun/sdk",
     "lint": "npm run lint --workspaces --if-present",
-    "clean": "rm -rf node_modules && npm run clean --workspaces --if-present"
+    "clean": "rm -rf node_modules && npm run clean --workspaces --if-present",
+    "verify:sdk": "ts-node scripts/verify-sdk.ts"
   },
   "devDependencies": {
+    "@types/node": "^20.19.25",
+    "ts-morph": "^21.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1"
   }
 }
-

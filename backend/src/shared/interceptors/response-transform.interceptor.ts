@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiResponseDto } from '../dto/api-response.dto';
 
@@ -12,13 +11,8 @@ import { ApiResponseDto } from '../dto/api-response.dto';
  * Interceptor to transform all responses to standard API response format
  */
 @Injectable()
-export class ResponseTransformInterceptor<T>
-  implements NestInterceptor<T, ApiResponseDto<T>>
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<ApiResponseDto<T>> {
+export class ResponseTransformInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((data) => {
         // If already wrapped in ApiResponseDto, return as-is
@@ -37,4 +31,3 @@ export class ResponseTransformInterceptor<T>
     );
   }
 }
-

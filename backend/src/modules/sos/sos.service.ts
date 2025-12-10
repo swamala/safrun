@@ -685,9 +685,12 @@ export class SosService {
 
   async getAlertHistory(
     userId: string,
-    limit = 10,
-    offset = 0,
+    limit?: number,
+    offset?: number,
   ): Promise<SOSListResponseDto> {
+    const take = limit ?? 10;
+    const skip = offset ?? 0;
+    
     const [alerts, total] = await Promise.all([
       this.prisma.sOSAlert.findMany({
         where: { userId },
@@ -700,8 +703,8 @@ export class SosService {
           },
         },
         orderBy: { triggeredAt: 'desc' },
-        skip: offset,
-        take: limit,
+        skip,
+        take,
       }),
       this.prisma.sOSAlert.count({ where: { userId } }),
     ]);
@@ -709,8 +712,8 @@ export class SosService {
     return {
       alerts: alerts.map((a) => this.mapToResponse(a)),
       total,
-      offset,
-      limit,
+      offset: skip,
+      limit: take,
     };
   }
 

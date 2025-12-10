@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle, Pressable, StyleProp } from 'react-native';
 import { useTheme } from '@/theme/ThemeProvider';
 import { colors } from '@/theme/colors';
 import { borderRadius, spacing, componentSpacing } from '@/theme/spacing';
@@ -19,7 +19,7 @@ interface CardProps {
   variant?: CardVariant;
   padding?: CardPadding;
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Card({
@@ -69,7 +69,7 @@ export function Card({
     }
   };
 
-  const cardStyle: ViewStyle[] = [
+  const cardStyle = [
     styles.card,
     { padding: getPadding() },
     getVariantStyles(),

@@ -80,7 +80,7 @@ export class ProfileController {
   @ApiResponse({ status: 200, description: 'Avatar uploaded successfully' })
   async uploadAvatar(
     @CurrentUser('id') userId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
   ): Promise<{ avatarUrl: string; thumbnailUrl: string }> {
     const uploadedFile: UploadFileType = {
       fieldname: file.fieldname,

@@ -16,12 +16,13 @@ import {
 } from 'lucide-react';
 import { useSOSStore } from '@/stores/sos.store';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { api } from '@/lib/api';
+import { sdk } from '@/lib/sdk';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatRelativeTime, cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import type { SOSAlert } from '@safrun/sdk';
 
 export default function SOSPage() {
   const {
@@ -37,12 +38,7 @@ export default function SOSPage() {
   
   const { latitude, longitude, getCurrentPosition } = useGeolocation();
   const [isTriggering, setIsTriggering] = useState(false);
-  const [sosHistory, setSOSHistory] = useState<Array<{
-    id: string;
-    status: string;
-    triggerType: string;
-    triggeredAt: string;
-  }>>([]);
+  const [sosHistory, setSOSHistory] = useState<SOSAlert[]>([]);
 
   // Countdown timer for verification
   useEffect(() => {
@@ -61,7 +57,7 @@ export default function SOSPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const data = await api.getSOSHistory(10);
+        const data = await sdk.sos.getAlertHistory(10);
         setSOSHistory(data.alerts);
       } catch {
         // Handle error
@@ -71,7 +67,7 @@ export default function SOSPage() {
 
     const checkActive = async () => {
       try {
-        const alert = await api.getActiveSOSAlert();
+        const alert = await sdk.sos.getActiveAlert();
         if (alert) {
           setActiveAlert(alert);
         }
@@ -93,7 +89,7 @@ export default function SOSPage() {
     setIsTriggering(true);
 
     try {
-      const response = await api.triggerSOS({
+      const response = await sdk.sos.trigger({
         latitude,
         longitude,
         triggerType: 'MANUAL',
@@ -115,7 +111,7 @@ export default function SOSPage() {
     if (!activeAlert) return;
 
     try {
-      await api.verifySOS(activeAlert.id, isSafe);
+      await sdk.sos.verify({ alertId: activeAlert.id, isSafe });
       showVerificationModal(false);
 
       if (isSafe) {
@@ -133,7 +129,7 @@ export default function SOSPage() {
     if (!activeAlert) return;
 
     try {
-      await api.resolveSOSAlert(activeAlert.id);
+      await sdk.sos.resolve(activeAlert.id);
       clearSOS();
       toast.success('SOS resolved - glad you\'re safe!');
     } catch {
@@ -143,7 +139,7 @@ export default function SOSPage() {
 
   const handleRespondToAlert = async (alertId: string, accepted: boolean) => {
     try {
-      await api.acknowledgeSOS(alertId, accepted);
+      await sdk.sos.respondToAlert({ alertId, accepted });
       toast.success(accepted ? 'Thank you for responding!' : 'Response recorded');
     } catch {
       toast.error('Failed to respond');
@@ -400,7 +396,7 @@ export default function SOSPage() {
                         {alert.triggerType.replace('_', ' ')}
                       </p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
-                        {formatRelativeTime(alert.triggeredAt)}
+                        {formatRelativeTime(alert.triggeredAt.toString())}
                       </p>
                     </div>
                   </div>

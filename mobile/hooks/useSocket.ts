@@ -117,7 +117,7 @@ export function useSocket() {
           addSOSAlert({
             id: r.userId,
             name: r.displayName,
-            avatarUrl: r.avatarUrl,
+            avatarUrl: r.avatarUrl || undefined,
             location: {
               latitude: 0,
               longitude: 0,

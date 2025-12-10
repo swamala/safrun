@@ -11,7 +11,7 @@ import { spacing, borderRadius } from '@/theme/spacing';
 import { textStyles, fontWeight } from '@/theme/typography';
 import { shadows } from '@/theme/shadows';
 import { Avatar } from './Avatar';
-import { MapPinIcon, FootprintsIcon } from '@/components/icons';
+import { MapPinIcon, FootprintsIcon } from '@/components/Icons';
 
 interface MapCardProps {
   name: string;

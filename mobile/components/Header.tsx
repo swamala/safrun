@@ -39,7 +39,7 @@ export function Header({
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
 
-  const headerStyle: ViewStyle[] = [
+  const headerStyle = [
     styles.header,
     { paddingTop: insets.top + spacing.grid[2] },
     !transparent && {

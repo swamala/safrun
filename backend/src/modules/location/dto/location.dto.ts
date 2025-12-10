@@ -278,3 +278,63 @@ export class RunnerStatusDto {
   @ApiPropertyOptional()
   sessionId?: string | null;
 }
+
+export class ValidationResultDto {
+  @ApiProperty()
+  isValid: boolean;
+
+  @ApiProperty()
+  isAnomalous: boolean;
+
+  @ApiPropertyOptional()
+  reason?: string;
+}
+
+export class LocationPointDto {
+  @ApiProperty()
+  latitude: number;
+
+  @ApiProperty()
+  longitude: number;
+
+  @ApiPropertyOptional()
+  altitude?: number | null;
+
+  @ApiPropertyOptional()
+  speed?: number | null;
+
+  @ApiPropertyOptional()
+  heading?: number | null;
+
+  @ApiPropertyOptional()
+  accuracy?: number | null;
+
+  @ApiProperty()
+  timestamp: Date;
+}
+
+export class LocationHistoryResponseDto {
+  @ApiProperty()
+  userId: string;
+
+  @ApiPropertyOptional()
+  sessionId?: string | null;
+
+  @ApiProperty({ type: [LocationPointDto] })
+  points: LocationPointDto[];
+
+  @ApiProperty()
+  totalDistance: number;
+
+  @ApiProperty()
+  duration: number;
+
+  @ApiPropertyOptional()
+  averageSpeed?: number | null;
+
+  @ApiPropertyOptional()
+  startTime?: Date;
+
+  @ApiPropertyOptional()
+  endTime?: Date;
+}

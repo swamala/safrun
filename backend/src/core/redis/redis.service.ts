@@ -44,6 +44,10 @@ export class RedisService implements OnModuleDestroy {
     await this.redis.expire(key, seconds);
   }
 
+  async ttl(key: string): Promise<number> {
+    return this.redis.ttl(key);
+  }
+
   // Hash operations
   async hset(key: string, field: string, value: string): Promise<void> {
     await this.redis.hset(key, field, value);

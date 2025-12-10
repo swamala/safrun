@@ -18,10 +18,11 @@ import { useRunStore } from '@/stores/run.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useSocket } from '@/hooks/useSocket';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { api } from '@/lib/api';
+import { sdk } from '@/lib/sdk';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
+import { LiveMap, SafeMapLoader } from '@/components/map';
 import { formatDistance, formatDuration, formatPace, cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
@@ -73,14 +74,14 @@ export default function RunPage() {
     if (isTracking && latitude && longitude) {
       updateLocation(latitude, longitude, speed || 0, heading || 0, activeSession?.id);
       
-      // Also update via API
-      api.updateLocation({
+      // Also update via REST API
+      sdk.location.updateLocation({
         latitude,
         longitude,
         speed: speed || undefined,
         heading: heading || undefined,
         accuracy: accuracy || undefined,
-      }, activeSession?.id).catch(console.error);
+      }).catch(console.error);
     }
   }, [isTracking, latitude, longitude, speed, heading, accuracy, activeSession?.id, updateLocation]);
 
@@ -100,7 +101,8 @@ export default function RunPage() {
   useEffect(() => {
     const checkActiveSession = async () => {
       try {
-        const session = await api.getActiveSession();
+        const response = await sdk.sessions.getMySessions('ACTIVE', 1);
+        const session = response.sessions[0];
         if (session) {
           setActiveSession(session);
           setIsTracking(true);
@@ -131,7 +133,7 @@ export default function RunPage() {
     
     if (activeSession) {
       try {
-        await api.endSession(activeSession.id);
+        await sdk.sessions.endSession(activeSession.id);
         toast.success('Session ended');
       } catch {
         toast.error('Failed to end session');
@@ -152,20 +154,25 @@ export default function RunPage() {
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       {/* Map Area */}
       <div className="flex-1 relative bg-secondary-200 rounded-2xl overflow-hidden">
-        {/* Map placeholder - in production, use Mapbox */}
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary-100 to-secondary-200 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
-            <p className="text-secondary-500 text-lg">Live Map View</p>
-            {currentLocation ? (
-              <p className="text-secondary-400 text-sm mt-2">
-                {currentLocation.latitude.toFixed(6)}, {currentLocation.longitude.toFixed(6)}
-              </p>
-            ) : (
-              <p className="text-secondary-400 text-sm mt-2">Waiting for location...</p>
-            )}
-          </div>
-        </div>
+        {/* Live Map - wrapped in SafeMapLoader to prevent hydration errors */}
+        <SafeMapLoader className="w-full h-full">
+          <LiveMap
+            participants={activeSession?.participants.map(p => ({
+              userId: p.userId,
+              displayName: p.displayName,
+              avatarUrl: p.avatarUrl || undefined,
+              latitude: p.lastLatitude || currentLocation?.latitude || 0,
+              longitude: p.lastLongitude || currentLocation?.longitude || 0,
+              pace: p.currentPace ? `${Math.floor(p.currentPace)}'${Math.floor((p.currentPace % 1) * 60).toString().padStart(2, '0')}"` : undefined,
+              distance: p.distanceCovered,
+              status: 'running' as const,
+              isCurrentUser: p.userId === user?.id,
+            })) || []}
+            currentUserId={user?.id}
+            currentUserLocation={currentLocation || undefined}
+            showControls
+          />
+        </SafeMapLoader>
 
         {/* Participants overlay */}
         {activeSession && activeSession.participants.length > 0 && (
@@ -312,7 +319,7 @@ export default function RunPage() {
                     Active Session
                   </p>
                   <p className="text-lg font-bold text-secondary-900">
-                    {activeSession.name}
+                    {activeSession.title}
                   </p>
                   <p className="text-sm text-secondary-500">
                     {activeSession.participants.length} runners

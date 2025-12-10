@@ -18,11 +18,12 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRunStore } from '@/stores/run.store';
-import { api } from '@/lib/api';
+import { sdk } from '@/lib/sdk';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { formatDistance, formatDuration, cn } from '@/lib/utils';
+import type { Session as SDKSession, Profile as SDKProfile, UserStats } from '@safrun/sdk';
 
 /**
  * SAFRUN Dashboard Page
@@ -30,45 +31,35 @@ import { formatDistance, formatDuration, cn } from '@/lib/utils';
  * Plus Jakarta Sans font, SAFRUN orange gradient
  */
 
-interface Session {
-  id: string;
-  name: string;
-  status: string;
-  participantCount: number;
-  creator: {
-    displayName: string;
-  };
-}
-
-interface Profile {
-  stats: {
-    totalDistance: number;
-    totalRuns: number;
-    totalDuration: number;
-    averagePace: number | null;
-  };
-  safetySettings: {
-    autoSOSEnabled: boolean;
-    fallDetectionEnabled: boolean;
-  };
+interface DashboardData {
+  profile: SDKProfile | null;
+  stats: UserStats | null;
+  sessions: SDKSession[];
 }
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const { activeSession } = useRunStore();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [recentSessions, setRecentSessions] = useState<Session[]>([]);
+  const [data, setData] = useState<DashboardData>({
+    profile: null,
+    stats: null,
+    sessions: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [profileData, sessionsData] = await Promise.all([
-          api.getProfile(),
-          api.getSessions({ limit: 5 }),
+        const [profileData, statsData, sessionsData] = await Promise.all([
+          sdk.profile.getProfile(),
+          sdk.stats.getMyStats(),
+          sdk.sessions.getMySessions(undefined, 5),
         ]);
-        setProfile(profileData);
-        setRecentSessions(sessionsData.sessions);
+        setData({
+          profile: profileData,
+          stats: statsData,
+          sessions: sessionsData.sessions,
+        });
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -81,29 +72,29 @@ export default function DashboardPage() {
   const stats = [
     {
       label: 'Total Distance',
-      value: formatDistance(profile?.stats.totalDistance || 0),
+      value: formatDistance(data.stats?.totalDistance || 0),
       icon: Footprints,
       bgColor: 'bg-safrun-500/10',
       iconColor: 'text-safrun-500',
     },
     {
       label: 'Total Runs',
-      value: profile?.stats.totalRuns || 0,
+      value: data.stats?.totalRuns || 0,
       icon: TrendingUp,
       bgColor: 'bg-safety-500/10',
       iconColor: 'text-safety-500',
     },
     {
       label: 'Time Running',
-      value: formatDuration(profile?.stats.totalDuration || 0),
+      value: formatDuration(data.stats?.totalDuration || 0),
       icon: Clock,
       bgColor: 'bg-blue-500/10',
       iconColor: 'text-blue-500',
     },
     {
       label: 'Avg Pace',
-      value: profile?.stats.averagePace 
-        ? `${profile.stats.averagePace.toFixed(1)} min/km`
+      value: data.stats?.averagePace 
+        ? `${data.stats.averagePace.toFixed(1)} min/km`
         : '--',
       icon: Zap,
       bgColor: 'bg-purple-500/10',
@@ -169,7 +160,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-white/80 text-sm">Active Session</p>
-                    <p className="text-lg font-semibold text-white">{activeSession.name}</p>
+                    <p className="text-lg font-semibold text-white">{activeSession.title}</p>
                   </div>
                 </div>
                 <ChevronRight className="w-6 h-6 text-white" />
@@ -229,10 +220,10 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="w-5 h-5 text-text-light-body dark:text-text-dark-body" />
-                  <span className="font-medium text-text-light-heading dark:text-text-dark-body">Auto SOS</span>
+                  <span className="font-medium text-text-light-heading dark:text-text-dark-body">Auto Location Share</span>
                 </div>
-                <Badge variant={profile?.safetySettings.autoSOSEnabled ? 'success' : 'secondary'}>
-                  {profile?.safetySettings.autoSOSEnabled ? 'Enabled' : 'Disabled'}
+                <Badge variant={data.profile?.autoShareLocation ? 'success' : 'secondary'}>
+                  {data.profile?.autoShareLocation ? 'Enabled' : 'Disabled'}
                 </Badge>
               </div>
               <div 
@@ -243,10 +234,10 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center gap-3">
                   <Zap className="w-5 h-5 text-text-light-body dark:text-text-dark-body" />
-                  <span className="font-medium text-text-light-heading dark:text-text-dark-body">Fall Detection</span>
+                  <span className="font-medium text-text-light-heading dark:text-text-dark-body">SOS Countdown</span>
                 </div>
-                <Badge variant={profile?.safetySettings.fallDetectionEnabled ? 'success' : 'secondary'}>
-                  {profile?.safetySettings.fallDetectionEnabled ? 'Enabled' : 'Disabled'}
+                <Badge variant="primary">
+                  {data.profile?.sosCountdownSeconds || 10}s
                 </Badge>
               </div>
               <Link href="/settings">
@@ -272,9 +263,9 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              {recentSessions.length > 0 ? (
+              {data.sessions.length > 0 ? (
                 <div className="space-y-3">
-                  {recentSessions.map((session) => (
+                  {data.sessions.map((session) => (
                     <Link
                       key={session.id}
                       href={`/sessions/${session.id}`}
@@ -291,7 +282,7 @@ export default function DashboardPage() {
                           <Users className="w-5 h-5 text-safrun-500" />
                         </div>
                         <div>
-                          <p className="font-medium text-text-light-heading dark:text-text-dark-heading">{session.name}</p>
+                          <p className="font-medium text-text-light-heading dark:text-text-dark-heading">{session.title}</p>
                           <p className="text-sm text-text-light-body dark:text-text-dark-body">
                             {session.participantCount} runners • {session.status}
                           </p>

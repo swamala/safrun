@@ -109,3 +109,37 @@ export {
   HeartIcon,
   ShareIcon,
 } from './icons/Common';
+
+// Additional Icons from main Icons.tsx
+export {
+  CrosshairIcon,
+  LayersIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+  FilterIcon,
+  ClockIcon,
+  MessageIcon,
+  SendIcon,
+  PhoneIcon,
+} from './Icons';
+
+// ============================================
+// Map Components
+// ============================================
+export {
+  SafrunMap,
+  RunnerMarker,
+  RoutePolyline,
+  LiveSessionMap,
+  NearbyRunnersMap,
+  ResponderMap,
+} from './map';
+
+// ============================================
+// Chat Components
+// ============================================
+export {
+  ChatView,
+  MessageBubble,
+  ChatInput,
+} from './chat';

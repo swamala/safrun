@@ -184,5 +184,5 @@ export const groupStats = {
   activeRunners: mockRunners.filter(r => r.isLive).length,
   totalDistance: mockRunners.reduce((sum, r) => sum + parseFloat(r.distance), 0).toFixed(1),
   sosAlerts: mockRunners.filter(r => r.safetyStatus === 'sos').length,
-  groups: [...new Set(mockRunners.filter(r => r.groupName).map(r => r.groupName))],
+  groups: Array.from(new Set(mockRunners.filter(r => r.groupName).map(r => r.groupName))),
 };

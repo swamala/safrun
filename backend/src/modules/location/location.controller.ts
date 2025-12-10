@@ -63,7 +63,7 @@ export class LocationController {
     @Query('sessionId') sessionId?: string,
     @Query('soloRunId') soloRunId?: string,
   ): Promise<{ processed: number; errors: number }> {
-    return this.locationService.updateLocationsBulk(userId, dto, sessionId, soloRunId);
+    return this.locationService.updateLocationsBulk(userId, dto, sessionId);
   }
 
   @Post('stream')
@@ -77,7 +77,6 @@ export class LocationController {
       userId,
       { locations: dto.locations },
       dto.sessionId,
-      dto.soloRunId,
     );
 
     const stats = await this.paceService.getPaceStats(

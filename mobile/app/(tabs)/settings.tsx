@@ -95,6 +95,7 @@ export default function SettingsScreen() {
             },
           ]}
           activeOpacity={0.8}
+          onPress={() => router.push('/(tabs)/settings/profile' as any)}
         >
           <View style={styles.profileAvatar}>
             <Text style={styles.profileInitial}>JD</Text>

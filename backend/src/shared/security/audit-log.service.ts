@@ -26,7 +26,7 @@ export class AuditLogService {
           action: entry.action,
           resource: entry.resource,
           resourceId: entry.resourceId,
-          details: entry.details,
+          details: entry.details as any,
           ipAddress: entry.ipAddress,
           userAgent: entry.userAgent,
         },

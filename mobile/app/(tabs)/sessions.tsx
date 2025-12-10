@@ -105,7 +105,7 @@ export default function SessionsScreen() {
               },
               shadows.glowOrange,
             ]}
-            onPress={() => router.push('/(tabs)/sessions/create')}
+            onPress={() => router.push('/(tabs)/sessions/create' as any)}
           >
             <PlusIcon size={24} color={colors.white} />
           </TouchableOpacity>
@@ -121,7 +121,7 @@ export default function SessionsScreen() {
             <TouchableOpacity
               key={session.id}
               activeOpacity={0.8}
-              onPress={() => router.push(`/(tabs)/sessions/${session.id}`)}
+              onPress={() => router.push(`/(tabs)/sessions/${session.id}` as any)}
             >
               <Card padding="none" style={styles.sessionCard}>
                 <View style={styles.sessionContent}>
@@ -196,7 +196,7 @@ export default function SessionsScreen() {
             Create your own and invite friends to join
           </Text>
           <Button
-            onPress={() => router.push('/(tabs)/sessions/create')}
+            onPress={() => router.push('/(tabs)/sessions/create' as any)}
             leftIcon={<PlusIcon size={20} color={colors.white} />}
             style={{ marginTop: spacing.grid[3] }}
           >

@@ -130,12 +130,11 @@ export class MilestoneService {
         data: {
           userId,
           type: FeedItemType.MILESTONE_REACHED,
-          timestamp: now,
           metadata: {
             milestoneType: type,
             title,
             description,
-          },
+          } as any,
         },
       });
 

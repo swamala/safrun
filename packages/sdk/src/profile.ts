@@ -23,10 +23,16 @@ export class ProfileApi {
     return this.http.put<Profile>('/profile', data);
   }
 
-  async uploadAvatar(file: File | Blob): Promise<{ avatarUrl: string; thumbnailUrl: string }> {
-    const formData = new FormData();
-    formData.append('avatar', file);
-    return this.http.upload('/profile/avatar', formData);
+  async uploadAvatar(formData: FormData | { avatar: File | Blob }): Promise<{ avatarUrl: string; thumbnailUrl: string }> {
+    // If formData is already FormData, use it directly
+    if (formData instanceof FormData) {
+      return this.http.upload('/profile/avatar', formData);
+    }
+    
+    // Otherwise, create FormData
+    const data = new FormData();
+    data.append('avatar', formData.avatar);
+    return this.http.upload('/profile/avatar', data);
   }
 
   async updateSafetySettings(settings: SafetySettings): Promise<Profile> {

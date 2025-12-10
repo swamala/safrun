@@ -14,6 +14,7 @@ import {
   TextStyle,
   TextInputProps,
   TouchableOpacity,
+  StyleProp,
 } from 'react-native';
 import { useTheme } from '@/theme/ThemeProvider';
 import { colors } from '@/theme/colors';
@@ -56,7 +57,7 @@ export function Input({
     }
   };
 
-  const inputContainerStyle: ViewStyle[] = [
+  const inputContainerStyle = [
     styles.inputContainer,
     {
       height: getInputHeight(),
@@ -76,15 +77,15 @@ export function Input({
     !isDark && shadows.softXs,
   ];
 
-  const inputStyle: TextStyle[] = [
+  const inputStyle: StyleProp<TextStyle> = [
     styles.input,
     {
       color: theme.text.primary,
       fontSize: inputSize === 'sm' ? 14 : inputSize === 'lg' ? 16 : 15,
     },
-    leftIcon && { paddingLeft: 44 },
-    rightIcon && { paddingRight: 44 },
-    style as TextStyle,
+    leftIcon ? { paddingLeft: 44 } : undefined,
+    rightIcon ? { paddingRight: 44 } : undefined,
+    style as TextStyle | undefined,
   ];
 
   return (

@@ -352,13 +352,16 @@ export interface SOSTimeline {
 // ============================================================================
 
 export interface CreateSessionRequest {
-  title: string;
+  name: string; // Backend expects 'name' not 'title'
   description?: string;
-  scheduledAt?: Date;
+  scheduledStartAt?: Date; // Backend expects 'scheduledStartAt'
+  privacy?: 'PUBLIC' | 'PRIVATE' | 'FRIENDS_ONLY';
   maxParticipants?: number;
-  isPrivate?: boolean;
   startLatitude?: number;
   startLongitude?: number;
+  plannedDistance?: number;
+  allowLateJoin?: boolean;
+  shareRoutePublic?: boolean;
 }
 
 export interface JoinSessionRequest {

@@ -106,7 +106,16 @@ const stats = [
 ];
 
 // Testimonials
-const testimonials = [
+interface Testimonial {
+  quote: string;
+  author: string;
+  role: string;
+  location: string;
+  avatar: string;
+  rating: number;
+}
+
+const testimonials: Testimonial[] = [
   {
     quote: "SAFRUN gave me confidence to run alone again. Knowing my family can track me in real-time is priceless. I feel safe on every run now.",
     author: 'Maria Santos',
@@ -158,7 +167,7 @@ const navLinks = [
 ];
 
 // Testimonial Carousel Component
-function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonials }) {
+function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -194,7 +203,7 @@ function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonia
     }),
   };
 
-  const TestimonialCard = ({ testimonial, index }: { testimonial: typeof testimonials[0]; index: number }) => (
+  const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; index: number }) => (
     <div className="relative bg-white dark:bg-white/[0.03] rounded-3xl p-8 border border-slate-200/80 dark:border-white/[0.06] hover:border-orange-500/30 dark:hover:border-orange-500/30 transition-all duration-300 group">
       <Quote className="w-10 h-10 text-orange-500/10 absolute top-6 right-6" />
       
@@ -313,7 +322,8 @@ function TestimonialCarousel({ testimonials }: { testimonials: typeof testimonia
 }
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -321,21 +331,24 @@ export default function LandingPage() {
   const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.98]);
 
   useEffect(() => {
+    setMounted(true);
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const stored = localStorage.getItem('theme');
     setIsDark(stored === 'dark' || (!stored && prefersDark));
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
+  }, [isDark, mounted]);
 
   useEffect(() => {
+    if (!mounted) return;
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mounted]);
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${

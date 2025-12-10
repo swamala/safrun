@@ -19,7 +19,7 @@ import { colors } from '@/theme/colors';
 import { spacing, borderRadius } from '@/theme/spacing';
 import { textStyles, fontWeight } from '@/theme/typography';
 import { Button } from '@/components';
-import { AlertTriangleIcon, XIcon, ShieldIcon } from '@/components/icons';
+import { AlertTriangleIcon, XIcon, ShieldIcon } from '@/components/Icons';
 import { useSOSStore } from '@/lib/store';
 
 const HOLD_DURATION = 3000; // 3 seconds to activate
@@ -34,8 +34,8 @@ export default function SOSActivationScreen() {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const holdTimer = useRef<NodeJS.Timeout | null>(null);
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Pulse animation for button
   React.useEffect(() => {

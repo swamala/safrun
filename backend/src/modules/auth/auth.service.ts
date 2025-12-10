@@ -184,7 +184,7 @@ export class AuthService {
         avatarUrl: user.profile?.avatarUrl,
       },
       ...tokens,
-      deviceId: payload.deviceId,
+      deviceId: payload.deviceId || '',
     };
   }
 

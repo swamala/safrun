@@ -28,7 +28,7 @@ import {
   XIcon,
   UsersIcon,
   ShieldIcon,
-} from '@/components/icons';
+} from '@/components/Icons';
 import { useSOSStore } from '@/lib/store';
 
 export default function SOSBroadcastScreen() {

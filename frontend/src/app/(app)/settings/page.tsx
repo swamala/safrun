@@ -15,40 +15,14 @@ import {
   Save,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
-import { api } from '@/lib/api';
+import { sdk } from '@/lib/sdk';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Input, Textarea } from '@/components/ui/Input';
 import { Avatar } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-
-interface Profile {
-  displayName: string;
-  bio: string | null;
-  avatarUrl: string | null;
-  safetySettings: {
-    autoSOSEnabled: boolean;
-    fallDetectionEnabled: boolean;
-    noMovementTimeout: number;
-    sosVerificationTime: number;
-  };
-  privacySettings: {
-    profileVisibility: string;
-    showOnNearbyRadar: boolean;
-    allowGroupInvites: boolean;
-    anonymousModeEnabled: boolean;
-  };
-}
-
-interface EmergencyContact {
-  id: string;
-  name: string;
-  phone: string;
-  relationship: string;
-  isPrimary: boolean;
-  isVerified: boolean;
-}
+import type { Profile as SDKProfile, EmergencyContact as SDKEmergencyContact } from '@safrun/sdk';
 
 // Toggle Switch Component
 function Toggle({ 
@@ -96,8 +70,8 @@ function Toggle({
 
 export default function SettingsPage() {
   const { user, setUser } = useAuthStore();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [contacts, setContacts] = useState<EmergencyContact[]>([]);
+  const [profile, setProfile] = useState<SDKProfile | null>(null);
+  const [contacts, setContacts] = useState<SDKEmergencyContact[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'safety' | 'privacy' | 'contacts'>('profile');
@@ -106,33 +80,34 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [safetySettings, setSafetySettings] = useState({
-    autoSOSEnabled: false,
-    fallDetectionEnabled: false,
-    noMovementTimeout: 300,
-    sosVerificationTime: 10,
+    autoShareLocation: false,
+    sosCountdownSeconds: 10,
   });
   const [privacySettings, setPrivacySettings] = useState({
-    showOnNearbyRadar: true,
-    allowGroupInvites: true,
-    anonymousModeEnabled: false,
+    showOnNearby: true,
+    shareLocationWithFollowers: true,
+    shareStatsPublicly: false,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [profileData, contactsData] = await Promise.all([
-          api.getProfile(),
-          api.getEmergencyContacts(),
+          sdk.profile.getProfile(),
+          sdk.profile.getEmergencyContacts(),
         ]);
         setProfile(profileData);
         setContacts(contactsData);
         setDisplayName(profileData.displayName);
         setBio(profileData.bio || '');
-        setSafetySettings(profileData.safetySettings);
+        setSafetySettings({
+          autoShareLocation: profileData.autoShareLocation,
+          sosCountdownSeconds: profileData.sosCountdownSeconds,
+        });
         setPrivacySettings({
-          showOnNearbyRadar: profileData.privacySettings.showOnNearbyRadar,
-          allowGroupInvites: profileData.privacySettings.allowGroupInvites,
-          anonymousModeEnabled: profileData.privacySettings.anonymousModeEnabled,
+          showOnNearby: profileData.showOnNearby,
+          shareLocationWithFollowers: profileData.shareLocationWithFollowers,
+          shareStatsPublicly: profileData.shareStatsPublicly,
         });
       } catch (error) {
         console.error('Failed to fetch settings:', error);
@@ -146,7 +121,7 @@ export default function SettingsPage() {
   const handleSaveProfile = async () => {
     setIsSaving(true);
     try {
-      await api.updateProfile({ displayName, bio });
+      await sdk.profile.updateProfile({ displayName, bio });
       setUser({ ...user!, displayName });
       toast.success('Profile updated');
     } catch {
@@ -159,7 +134,7 @@ export default function SettingsPage() {
   const handleSaveSafety = async () => {
     setIsSaving(true);
     try {
-      await api.updateSafetySettings(safetySettings);
+      await sdk.profile.updateSafetySettings(safetySettings);
       toast.success('Safety settings updated');
     } catch {
       toast.error('Failed to update safety settings');
@@ -279,17 +254,10 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <Toggle
-                checked={safetySettings.autoSOSEnabled}
-                onChange={(checked) => setSafetySettings({ ...safetySettings, autoSOSEnabled: checked })}
-                label="Auto SOS"
-                description="Automatically trigger SOS based on motion detection"
-              />
-
-              <Toggle
-                checked={safetySettings.fallDetectionEnabled}
-                onChange={(checked) => setSafetySettings({ ...safetySettings, fallDetectionEnabled: checked })}
-                label="Fall Detection"
-                description="Detect falls and trigger SOS automatically"
+                checked={safetySettings.autoShareLocation}
+                onChange={(checked) => setSafetySettings({ ...safetySettings, autoShareLocation: checked })}
+                label="Auto Location Sharing"
+                description="Automatically share location during running sessions"
               />
 
               <div 
@@ -297,36 +265,14 @@ export default function SettingsPage() {
                 style={{ background: 'rgba(var(--muted), 0.3)' }}
               >
                 <div>
-                  <p className="font-medium text-slate-900 dark:text-white">No Movement Timeout</p>
+                  <p className="font-medium text-slate-900 dark:text-white">SOS Countdown Duration</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Trigger SOS if no movement detected for this duration
+                    Time to cancel before SOS is activated
                   </p>
                 </div>
                 <select
-                  value={safetySettings.noMovementTimeout}
-                  onChange={(e) => setSafetySettings({ ...safetySettings, noMovementTimeout: parseInt(e.target.value) })}
-                  className="w-full h-12 px-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
-                >
-                  <option value={120}>2 minutes</option>
-                  <option value={180}>3 minutes</option>
-                  <option value={300}>5 minutes</option>
-                  <option value={600}>10 minutes</option>
-                </select>
-              </div>
-
-              <div 
-                className="p-4 rounded-xl space-y-3"
-                style={{ background: 'rgba(var(--muted), 0.3)' }}
-              >
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">SOS Verification Time</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Time to respond before SOS is activated
-                  </p>
-                </div>
-                <select
-                  value={safetySettings.sosVerificationTime}
-                  onChange={(e) => setSafetySettings({ ...safetySettings, sosVerificationTime: parseInt(e.target.value) })}
+                  value={safetySettings.sosCountdownSeconds}
+                  onChange={(e) => setSafetySettings({ ...safetySettings, sosCountdownSeconds: parseInt(e.target.value) })}
                   className="w-full h-12 px-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/30"
                 >
                   <option value={5}>5 seconds</option>
@@ -362,24 +308,24 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <Toggle
-                checked={privacySettings.showOnNearbyRadar}
-                onChange={(checked) => setPrivacySettings({ ...privacySettings, showOnNearbyRadar: checked })}
+                checked={privacySettings.showOnNearby}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, showOnNearby: checked })}
                 label="Show on Nearby Radar"
                 description="Allow other runners to discover you nearby"
               />
 
               <Toggle
-                checked={privacySettings.allowGroupInvites}
-                onChange={(checked) => setPrivacySettings({ ...privacySettings, allowGroupInvites: checked })}
-                label="Allow Group Invites"
-                description="Let others invite you to running sessions"
+                checked={privacySettings.shareLocationWithFollowers}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, shareLocationWithFollowers: checked })}
+                label="Share Location with Followers"
+                description="Allow followers to see your location during runs"
               />
 
               <Toggle
-                checked={privacySettings.anonymousModeEnabled}
-                onChange={(checked) => setPrivacySettings({ ...privacySettings, anonymousModeEnabled: checked })}
-                label="Anonymous Mode"
-                description="Hide your name and avatar from others"
+                checked={privacySettings.shareStatsPublicly}
+                onChange={(checked) => setPrivacySettings({ ...privacySettings, shareStatsPublicly: checked })}
+                label="Share Stats Publicly"
+                description="Make your running statistics public"
               />
             </CardContent>
           </Card>
@@ -416,15 +362,17 @@ export default function SettingsPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-slate-900 dark:text-white">{contact.name}</p>
-                            {contact.isPrimary && (
+                            {contact.priority === 1 && (
                               <span className="badge badge-primary">Primary</span>
                             )}
-                            {contact.isVerified && (
-                              <span className="badge badge-success">Verified</span>
+                            {contact.notifyOnSOS && (
+                              <span className="badge badge-success">SOS Alerts</span>
                             )}
                           </div>
                           <p className="text-sm text-slate-500 dark:text-slate-400">{contact.phone}</p>
-                          <p className="text-xs text-slate-400 dark:text-slate-500">{contact.relationship}</p>
+                          {contact.relationship && (
+                            <p className="text-xs text-slate-400 dark:text-slate-500">{contact.relationship}</p>
+                          )}
                         </div>
                       </div>
                       <Button variant="ghost" size="icon-sm">

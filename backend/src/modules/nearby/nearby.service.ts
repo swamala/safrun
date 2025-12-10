@@ -209,6 +209,7 @@ export class NearbyService {
               }
             : null,
         isAnonymous: profile.anonymousModeEnabled,
+        status: 'idle' as const,
         stats: {
           totalDistance: profile.totalDistance,
           totalRuns: profile.totalRuns,

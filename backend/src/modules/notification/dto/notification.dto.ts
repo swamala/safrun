@@ -124,6 +124,9 @@ export class NotificationResponseDto {
   messageId?: string;
 
   @ApiPropertyOptional()
+  devices?: number;
+
+  @ApiPropertyOptional()
   error?: string;
 }
 

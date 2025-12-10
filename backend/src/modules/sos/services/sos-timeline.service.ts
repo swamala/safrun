@@ -100,11 +100,11 @@ export class SosTimelineService {
     }
 
     // Escalation events
-    if (alert.escalatedAt) {
+    if (alert.escalationLevel && alert.escalationLevel !== 'LEVEL_1') {
       events.push({
         id: `${alertId}_escalated`,
         type: 'ESCALATED',
-        timestamp: alert.escalatedAt,
+        timestamp: alert.updatedAt,
         description: `Alert escalated to ${alert.escalationLevel}`,
         metadata: { escalationLevel: alert.escalationLevel },
       });
@@ -126,13 +126,13 @@ export class SosTimelineService {
       });
 
       // Accepted/Declined
-      if (responder.respondedAt) {
+      if (responder.status !== 'NOTIFIED') {
         events.push({
           id: `${responder.id}_responded`,
           type: responder.status === 'ACCEPTED' || responder.status === 'EN_ROUTE' || responder.status === 'ARRIVED'
             ? 'RESPONDER_ACCEPTED'
             : 'RESPONDER_DECLINED',
-          timestamp: responder.respondedAt,
+          timestamp: responder.updatedAt,
           actorId: responder.responderId,
           actorName: responderName,
           description: `${responderName} ${
@@ -207,8 +207,8 @@ export class SosTimelineService {
     const firstResponse = alert.responders.find(
       (r) => r.status === 'ACCEPTED' || r.status === 'EN_ROUTE' || r.status === 'ARRIVED',
     );
-    const responseTimeSeconds = firstResponse?.respondedAt
-      ? Math.round((firstResponse.respondedAt.getTime() - alert.triggeredAt.getTime()) / 1000)
+    const responseTimeSeconds = firstResponse?.updatedAt
+      ? Math.round((firstResponse.updatedAt.getTime() - alert.triggeredAt.getTime()) / 1000)
       : null;
 
     // Time to resolution

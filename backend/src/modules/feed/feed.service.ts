@@ -130,15 +130,15 @@ export class FeedService {
     const result: WeeklyStatsDto = {
       weekStart,
       weekEnd,
-      totalDistance: weeklyStats.totalDistance,
-      totalDuration: weeklyStats.totalDuration,
-      totalRuns: weeklyStats.totalRuns,
-      avgPace: weeklyStats.avgPace,
-      calories: weeklyStats.calories,
-      sosTriggered: weeklyStats.sosTriggered,
-      sosResponded: weeklyStats.sosResponded,
+      totalDistance: weeklyStats?.totalDistance ?? 0,
+      totalDuration: weeklyStats?.totalDuration ?? 0,
+      totalRuns: weeklyStats?.totalRuns ?? 0,
+      avgPace: weeklyStats?.avgPace ?? null,
+      calories: weeklyStats?.calories ?? 0,
+      sosTriggered: weeklyStats?.sosTriggered ?? 0,
+      sosResponded: weeklyStats?.sosResponded ?? 0,
       previousWeekDistance: prevWeekStats?.totalDistance,
-      distanceChange: prevWeekStats
+      distanceChange: prevWeekStats && weeklyStats
         ? weeklyStats.totalDistance - prevWeekStats.totalDistance
         : undefined,
     };
@@ -185,17 +185,17 @@ export class FeedService {
     const result: MonthlyStatsDto = {
       monthStart,
       monthEnd,
-      totalDistance: monthlyStats.totalDistance,
-      totalDuration: monthlyStats.totalDuration,
-      totalRuns: monthlyStats.totalRuns,
-      avgPace: monthlyStats.avgPace,
-      calories: monthlyStats.calories,
-      sosTriggered: monthlyStats.sosTriggered,
-      sosResponded: monthlyStats.sosResponded,
-      longestRun: monthlyStats.longestRun,
-      fastestPace: monthlyStats.fastestPace,
+      totalDistance: monthlyStats?.totalDistance ?? 0,
+      totalDuration: monthlyStats?.totalDuration ?? 0,
+      totalRuns: monthlyStats?.totalRuns ?? 0,
+      avgPace: monthlyStats?.avgPace ?? null,
+      calories: monthlyStats?.calories ?? 0,
+      sosTriggered: monthlyStats?.sosTriggered ?? 0,
+      sosResponded: monthlyStats?.sosResponded ?? 0,
+      longestRun: monthlyStats?.longestRun ?? 0,
+      fastestPace: monthlyStats?.fastestPace ?? null,
       previousMonthDistance: prevMonthStats?.totalDistance,
-      distanceChange: prevMonthStats
+      distanceChange: prevMonthStats && monthlyStats
         ? monthlyStats.totalDistance - prevMonthStats.totalDistance
         : undefined,
     };
@@ -233,6 +233,8 @@ export class FeedService {
         avgPace: profile?.averagePace || null,
         currentStreak: profile?.currentStreak || 0,
         longestStreak: profile?.longestStreak || 0,
+        sosTriggered: 0,
+        sosResponded: 0,
       },
     };
   }

@@ -52,7 +52,7 @@ export class NotificationController {
     const result = await this.notificationService.sendTestNotification(userId);
     return {
       success: result.success,
-      messageId: result.messageId,
+      devices: result.devices,
     };
   }
 

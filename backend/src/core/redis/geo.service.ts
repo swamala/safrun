@@ -172,7 +172,7 @@ export class GeoService {
    * Get distance between two runners
    */
   async getDistanceBetweenRunners(userId1: string, userId2: string): Promise<number | null> {
-    const result = await this.redis.geodist(this.ACTIVE_RUNNERS_KEY, userId1, userId2, 'm');
+    const result = await (this.redis as any).geodist(this.ACTIVE_RUNNERS_KEY, userId1, userId2, 'm');
     return result ? parseFloat(result) : null;
   }
 

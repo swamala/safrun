@@ -3,7 +3,7 @@
  * Emergency SOS center with alert controls
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Vibration, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,6 +13,10 @@ import { spacing, borderRadius } from '@/theme/spacing';
 import { textStyles, fontWeight } from '@/theme/typography';
 import { shadows } from '@/theme/shadows';
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Header } from '@/components';
+import { SOSButton } from '@/components/ui/SOSButton';
+import { LoadingOverlay, ErrorState } from '@/components/ui';
+import { sdk } from '@/lib/sdk';
+import { useRunnerStore } from '@/lib/store';
 import {
   AlertTriangleIcon,
   ShieldIcon,
@@ -22,45 +26,116 @@ import {
   XIcon,
   CheckIcon,
 } from '@/components/Icons';
-
-// Mock nearby runners
-const nearbyRunners = [
-  { id: '1', name: 'Sarah C.', distance: '0.3km', status: 'available' },
-  { id: '2', name: 'Mike J.', distance: '0.5km', status: 'available' },
-  { id: '3', name: 'Emma W.', distance: '0.8km', status: 'running' },
-];
+import type { NearbyRunner } from '@safrun/sdk';
 
 export default function SOSScreen() {
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
+  const { currentLocation } = useRunnerStore();
   const [isSOSActive, setIsSOSActive] = useState(false);
-  const [holdProgress, setHoldProgress] = useState(0);
+  const [activeAlertId, setActiveAlertId] = useState<string | null>(null);
+  const [nearbyRunners, setNearbyRunners] = useState<NearbyRunner[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSOSPress = () => {
-    Alert.alert(
-      'Activate SOS Alert?',
-      'This will notify nearby runners and your emergency contacts.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Activate',
-          style: 'destructive',
-          onPress: () => {
-            Vibration.vibrate([0, 500, 200, 500]);
-            setIsSOSActive(true);
-          },
-        },
-      ]
-    );
+  // Check for active SOS on mount
+  useEffect(() => {
+    checkActiveAlert();
+    fetchNearbyRunners();
+  }, []);
+
+  const checkActiveAlert = async () => {
+    try {
+      const alert = await sdk.sos.getActiveAlert();
+      if (alert) {
+        setIsSOSActive(true);
+        setActiveAlertId(alert.id);
+      }
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to check active alert:', error);
+      }
+    }
   };
 
-  const handleCancelSOS = () => {
-    setIsSOSActive(false);
-    Vibration.cancel();
+  const fetchNearbyRunners = async () => {
+    if (!currentLocation) return;
+    try {
+      setError(null);
+      const response = await sdk.nearby.getNearbyRunners(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        2000, // 2km radius
+        10    // max 10 runners
+      );
+      setNearbyRunners(response.runners);
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to fetch nearby runners:', error);
+      }
+      setError('Failed to load nearby runners');
+    }
+  };
+
+  const handleSOSActivate = async () => {
+    if (!currentLocation) {
+      Alert.alert('Location Required', 'Please enable location services to use SOS.');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Initiate pending SOS with location
+      const pendingAlert = await sdk.sos.initiatePending({
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        countdownSeconds: 5,
+      });
+      
+      // Activate SOS
+      const alert = await sdk.sos.activate({
+        alertId: pendingAlert.id,
+      });
+      
+      Vibration.vibrate([0, 500, 200, 500]);
+      setIsSOSActive(true);
+      setActiveAlertId(alert.id);
+      
+      Alert.alert(
+        'SOS Activated',
+        'Your emergency contacts and nearby runners have been notified.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to activate SOS:', error);
+      }
+      Alert.alert('Error', 'Failed to activate SOS. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelSOS = async () => {
+    if (!activeAlertId) return;
+    
+    try {
+      await sdk.sos.resolve(activeAlertId);
+      setIsSOSActive(false);
+      setActiveAlertId(null);
+      Vibration.cancel();
+      Alert.alert('SOS Cancelled', 'Your alert has been cancelled.');
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to cancel SOS:', error);
+      }
+      Alert.alert('Error', 'Failed to cancel SOS. Please try again.');
+    }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <LoadingOverlay visible={isLoading && !isSOSActive} message="Activating SOS..." />
       <Header title="SOS Center" />
 
       <ScrollView
@@ -98,23 +173,11 @@ export default function SOSScreen() {
               </Button>
             </View>
           ) : (
-            // Normal State
+            // Normal State - Use SOSButton component
             <View style={styles.sosButtonContainer}>
-              <TouchableOpacity
-                onPress={handleSOSPress}
-                activeOpacity={0.8}
-                style={[styles.sosButton, shadows.glowRed]}
-              >
-                <LinearGradient
-                  colors={[colors.danger[500], colors.danger[600]]}
-                  style={styles.sosButtonGradient}
-                >
-                  <AlertTriangleIcon size={48} color={colors.white} />
-                  <Text style={styles.sosButtonText}>SOS</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              <SOSButton onActivate={handleSOSActivate} disabled={isLoading} />
               <Text style={[styles.sosHint, { color: theme.text.secondary }]}>
-                Tap to activate emergency alert
+                Press and hold for 3 seconds to activate
               </Text>
             </View>
           )}
@@ -124,13 +187,17 @@ export default function SOSScreen() {
         <Card padding="none" style={styles.sectionCard}>
           <CardHeader style={styles.cardHeader}>
             <CardTitle icon={<UsersIcon size={20} color={colors.safrun[500]} />}>
-              Nearby Runners
+              Nearby Runners ({nearbyRunners.length})
             </CardTitle>
           </CardHeader>
           <CardContent style={styles.cardContent}>
-            {nearbyRunners.map((runner) => (
+            {nearbyRunners.length === 0 ? (
+              <Text style={[styles.infoText, { color: theme.text.muted }]}>
+                No runners nearby at the moment
+              </Text>
+            ) : nearbyRunners.map((runner) => (
               <View
-                key={runner.id}
+                key={runner.userId}
                 style={[
                   styles.runnerItem,
                   {
@@ -139,18 +206,18 @@ export default function SOSScreen() {
                 ]}
               >
                 <View style={styles.runnerAvatar}>
-                  <Text style={styles.runnerInitial}>{runner.name.charAt(0)}</Text>
+                  <Text style={styles.runnerInitial}>{runner.displayName.charAt(0)}</Text>
                 </View>
                 <View style={styles.runnerInfo}>
                   <Text style={[styles.runnerName, { color: theme.text.primary }]}>
-                    {runner.name}
+                    {runner.displayName}
                   </Text>
                   <Text style={[styles.runnerDistance, { color: theme.text.secondary }]}>
-                    {runner.distance} away
+                    {runner.distance < 1000 ? `${Math.round(runner.distance)}m` : `${(runner.distance / 1000).toFixed(1)}km`} away
                   </Text>
                 </View>
-                <Badge variant={runner.status === 'available' ? 'success' : 'primary'} size="sm">
-                  {runner.status === 'available' ? 'Available' : 'Running'}
+                <Badge variant={runner.status === 'moving' || runner.status === 'in_session' ? 'success' : 'secondary'} size="sm">
+                  {runner.status === 'moving' || runner.status === 'in_session' ? 'Running' : 'Available'}
                 </Badge>
               </View>
             ))}

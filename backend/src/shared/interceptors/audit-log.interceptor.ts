@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuditLogService } from '../security/audit-log.service';
 import { AuditAction } from '@prisma/client';
@@ -13,7 +12,7 @@ import { AuditAction } from '@prisma/client';
 export class AuditLogInterceptor implements NestInterceptor {
   constructor(private readonly auditLogService: AuditLogService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest();
     const method = request.method;
     const path = request.path;
@@ -29,7 +28,7 @@ export class AuditLogInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap({
-        next: (response: unknown) => {
+        next: (response) => {
           // Log successful operation
           this.auditLogService.log({
             userId,
@@ -112,4 +111,3 @@ export class AuditLogInterceptor implements NestInterceptor {
     return sanitized;
   }
 }
-

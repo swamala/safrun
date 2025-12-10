@@ -13,38 +13,23 @@ import {
   Search,
   Play,
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { sdk } from '@/lib/sdk';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatRelativeTime, cn } from '@/lib/utils';
+import type { Session as SDKSession, SessionStatus } from '@safrun/sdk';
 
-interface Session {
-  id: string;
-  name: string;
-  description: string | null;
-  status: 'SCHEDULED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-  privacy: string;
-  scheduledStartAt: string | null;
-  actualStartAt: string | null;
-  participantCount: number;
-  maxParticipants: number;
-  creator: {
-    id: string;
-    displayName: string;
-    avatarUrl?: string;
-  };
-}
-
-const statusColors = {
+const statusColors: Record<SessionStatus, string> = {
   SCHEDULED: 'bg-blue-100 text-blue-700',
   ACTIVE: 'bg-safety-100 text-safety-700',
+  PAUSED: 'bg-yellow-100 text-yellow-700',
   COMPLETED: 'bg-secondary-100 text-secondary-600',
   CANCELLED: 'bg-danger-100 text-danger-600',
 };
 
 export default function SessionsPage() {
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<SDKSession[]>([]);
   const [filter, setFilter] = useState<'all' | 'active' | 'scheduled' | 'mine'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -53,12 +38,11 @@ export default function SessionsPage() {
     const fetchSessions = async () => {
       setIsLoading(true);
       try {
-        const params: Record<string, unknown> = { limit: 50 };
-        if (filter === 'active') params.status = 'ACTIVE';
-        if (filter === 'scheduled') params.status = 'SCHEDULED';
-        if (filter === 'mine') params.participating = true;
+        let status: string | undefined;
+        if (filter === 'active') status = 'ACTIVE';
+        if (filter === 'scheduled') status = 'SCHEDULED';
 
-        const data = await api.getSessions(params);
+        const data = await sdk.sessions.getMySessions(status, 50);
         setSessions(data.sessions);
       } catch (error) {
         console.error('Failed to fetch sessions:', error);
@@ -70,14 +54,14 @@ export default function SessionsPage() {
   }, [filter]);
 
   const filteredSessions = sessions.filter((session) =>
-    session.name.toLowerCase().includes(searchQuery.toLowerCase())
+    session.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleJoinSession = async (sessionId: string) => {
     try {
-      await api.joinSession(sessionId);
+      await sdk.sessions.joinSession(sessionId);
       // Refresh sessions
-      const data = await api.getSessions({ limit: 50 });
+      const data = await sdk.sessions.getMySessions(undefined, 50);
       setSessions(data.sessions);
     } catch (error) {
       console.error('Failed to join session:', error);
@@ -150,12 +134,12 @@ export default function SessionsPage() {
                       {session.status}
                     </span>
                     <span className="text-xs text-secondary-500 bg-secondary-100 px-2 py-1 rounded">
-                      {session.privacy}
+                      {session.isPrivate ? 'Private' : 'Public'}
                     </span>
                   </div>
 
                   <h3 className="text-lg font-semibold text-secondary-900 mb-2">
-                    {session.name}
+                    {session.title}
                   </h3>
                   
                   {session.description && (
@@ -169,28 +153,32 @@ export default function SessionsPage() {
                       <Users className="w-4 h-4" />
                       <span>{session.participantCount}/{session.maxParticipants}</span>
                     </div>
-                    {(session.scheduledStartAt || session.actualStartAt) && (
+                    {(session.scheduledAt || session.startedAt) && (
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         <span>
-                          {formatRelativeTime(session.actualStartAt || session.scheduledStartAt!)}
+                          {formatRelativeTime((session.startedAt || session.scheduledAt)?.toString() || '')}
                         </span>
                       </div>
                     )}
                   </div>
 
                   <div className="flex items-center gap-3 mt-auto pt-4 border-t border-secondary-100">
-                    <Avatar
-                      src={session.creator.avatarUrl}
-                      name={session.creator.displayName}
-                      size="sm"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-secondary-900 truncate">
-                        {session.creator.displayName}
-                      </p>
-                      <p className="text-xs text-secondary-500">Organizer</p>
-                    </div>
+                    {session.participants.length > 0 && (
+                      <>
+                        <Avatar
+                          src={session.participants.find(p => p.userId === session.hostId)?.avatarUrl || undefined}
+                          name={session.participants.find(p => p.userId === session.hostId)?.displayName || 'Host'}
+                          size="sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-secondary-900 truncate">
+                            {session.participants.find(p => p.userId === session.hostId)?.displayName || 'Host'}
+                          </p>
+                          <p className="text-xs text-secondary-500">Organizer</p>
+                        </div>
+                      </>
+                    )}
                     {session.status === 'ACTIVE' || session.status === 'SCHEDULED' ? (
                       <Button
                         size="sm"

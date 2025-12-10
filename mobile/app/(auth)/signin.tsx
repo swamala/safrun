@@ -154,7 +154,7 @@ export default function SignInScreen() {
                   </Text>
                 </TouchableOpacity>
 
-                <Link href="/(auth)/forgot-password" asChild>
+                <Link href={'/(auth)/forgot-password' as any} asChild>
                   <TouchableOpacity>
                     <Text style={styles.forgotText}>Forgot password?</Text>
                   </TouchableOpacity>

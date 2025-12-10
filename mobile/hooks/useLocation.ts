@@ -112,8 +112,16 @@ export function useLocation(options: UseLocationOptions = {}) {
 
     setLocation(locationData);
     
-    // Update store
-    updateStoreLocation(locationData);
+    // Update store - convert null to undefined for store compatibility
+    updateStoreLocation({
+      latitude: locationData.latitude,
+      longitude: locationData.longitude,
+      altitude: locationData.altitude ?? undefined,
+      speed: locationData.speed ?? undefined,
+      heading: locationData.heading ?? undefined,
+      accuracy: locationData.accuracy ?? undefined,
+      timestamp: locationData.timestamp,
+    });
 
     // Send to server if enabled
     if (sendToServer) {

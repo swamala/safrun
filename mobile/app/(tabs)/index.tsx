@@ -191,7 +191,7 @@ export default function HomeScreen() {
                     backgroundColor: isDark ? 'rgba(255, 255, 255, 0.02)' : colors.navy[50],
                   },
                 ]}
-                onPress={() => router.push(`/(tabs)/sessions/${session.id}`)}
+                onPress={() => router.push(`/(tabs)/sessions/${session.id}` as any)}
                 activeOpacity={0.7}
               >
                 <View style={styles.sessionIcon}>
@@ -226,7 +226,7 @@ export default function HomeScreen() {
                     borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : colors.navy[200],
                   },
                 ]}
-                onPress={() => router.push('/(tabs)/sessions/create')}
+                onPress={() => router.push('/(tabs)/sessions/create' as any)}
               >
                 <View style={[styles.quickActionIcon, { backgroundColor: `${colors.safrun[500]}15` }]}>
                   <PlusIcon size={24} color={colors.safrun[500]} />
@@ -246,7 +246,7 @@ export default function HomeScreen() {
                 ]}
                 onPress={() => router.push('/(tabs)/sessions')}
               >
-                <View style={[styles.quickActionIcon, { backgroundColor: `${colors.info}15` }]}>
+                <View style={[styles.quickActionIcon, { backgroundColor: '#3B82F615' }]}>
                   <MapPinIcon size={24} color="#3B82F6" />
                 </View>
                 <Text style={[styles.quickActionText, { color: theme.text.primary }]}>
